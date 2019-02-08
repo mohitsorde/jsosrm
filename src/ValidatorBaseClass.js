@@ -4,6 +4,8 @@
  */
 'use strict'
 
+const GenericUtilityClass = require('./GenericUtilityClass')
+
 const validatorMap = {}
 
 /**
@@ -278,44 +280,49 @@ validatorMap['phoneNumber'] = {
   impl: phoneNumber
 }
 
-function ValidatorBaseClass () {}
-
-ValidatorBaseClass.prototype.validatorMap = validatorMap
-
-ValidatorBaseClass.prototype.listAllValidators = function () {
-  Object.keys(this.validatorMap).forEach((key) => {
-    console.log(key + ' => ' + this.validatorMap[key]['desc'])
-  })
+function ValidatorBaseClass () {
+  GenericUtilityClass.apply(this, arguments)
 }
+
+ValidatorBaseClass.prototype = Object.create(GenericUtilityClass.prototype)
+ValidatorBaseClass.prototype.constructor = ValidatorBaseClass
 
 /**
- * pushes a new validator to Base class or replaces existed validator with new implementation for the provided key
- * @param {string} key
- * @param {Function} impl
- * @param {string} desc
+ * executes each validator identified by the key on input value and returns a promise that resolves to true only if none of the validators fail
+ * @param {*} value
+ * @param {*} arrayOfUtilKeys
  */
-function pushValidator (key, impl, desc) {
-  desc = desc || (this.validatorMap[key] && this.validatorMap[key]['desc'])
-  this.validatorMap[key] = {
-    'desc': desc,
-    'impl': impl
-  }
-}
-
-ValidatorBaseClass.prototype.pushValidator = pushValidator
-
-function validate (value, validatorArr) {
-  for (let validatorKey of validatorArr) {
-    if (!this.validatorMap[validatorKey]) throw new Error('Unknown validator key provided')
-    if (!this.validatorMap[validatorKey](value)) {
+async function asyncValidate (value, arrayOfUtilKeys) {
+  let isValid
+  for (let validatorKey of arrayOfUtilKeys) {
+    this.isValidUtilKey(validatorKey)
+    isValid = await this.innerMap[validatorKey](value)
+    if (!isValid) {
       return false
     }
   }
   return true
 }
 
-ValidatorBaseClass.prototype.validate = validate
-
-module.exports = {
-  ValidatorBaseClass
+/**
+ * executes each validator identified by the key on input value and returns true only if none of the validators fail
+ * @param {*} value
+ * @param {*} arrayOfUtilKeys
+ */
+function validate (value, arrayOfUtilKeys) {
+  for (let validatorKey of arrayOfUtilKeys) {
+    this.isValidUtilKey(validatorKey)
+    if (!this.innerMap[validatorKey](value)) {
+      return false
+    }
+  }
+  return true
 }
+
+ValidatorBaseClass.prototype = Object.assign(ValidatorBaseClass.prototype, {
+  innerMap: validatorMap,
+  exec: validate,
+  asyncExec: asyncValidate
+})
+
+module.exports = ValidatorBaseClass
