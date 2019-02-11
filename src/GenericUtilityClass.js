@@ -6,22 +6,17 @@
 
 function GenericUtilityClass () {}
 
-GenericUtilityClass.prototype.innerMap = {
-  '__no_key__': {
-    desc: 'no utility has been defined',
-    impl: function () {}
-  }
-}
-
 /**
  * returns object with key as utility identifier and displays description of each utility
  */
 function listAll () {
   let utilityDict = {}
-  Object.keys(this.innerMap).forEach((key) => {
+  let keysList = Object.keys(this.innerMap)
+  keysList.forEach((key) => {
     console.log(key + ' => ' + this.innerMap[key]['desc'])
     utilityDict[key] = key
   })
+  if (!keysList.length) console.log('no utility has been defined')
   return utilityDict
 }
 
@@ -79,7 +74,8 @@ GenericUtilityClass.prototype = Object.assign(GenericUtilityClass.prototype, {
   push,
   exec,
   asyncExec,
-  isValidUtilKey
+  isValidUtilKey,
+  innerMap: {}
 })
 
 module.exports = GenericUtilityClass

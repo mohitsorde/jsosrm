@@ -119,6 +119,10 @@ validatorMap['integerOnly'] = {
   impl: integerOnly
 }
 
+/**
+ * validates descimal numbers or their subset is allowed
+ * @param {*} val
+ */
 function floatingNumber (val) {
   return /^-?[0-9]+\.?[0-9]*$/.test(val)
 }
@@ -180,6 +184,10 @@ validatorMap['pinCode'] = {
   impl: pinCode
 }
 
+/**
+ * validatesintegers greater than or equal to 0 are allowed
+ * @param {*} val
+ */
 function wholeNumber (val) {
   return /^[0-9]+$/.test(val)
 }
@@ -271,6 +279,10 @@ for (let elem of minCountList) {
   }
 }
 
+/**
+ * validates phone number has no unexpected characters
+ * @param {string} val
+ */
 function phoneNumber (val) {
   return /^\+?[-()0-9]+$/.test(val)
 }
@@ -281,6 +293,7 @@ validatorMap['phoneNumber'] = {
 }
 
 function ValidatorBaseClass () {
+  this.innerMap = validatorMap
   GenericUtilityClass.apply(this, arguments)
 }
 
@@ -320,7 +333,6 @@ function validate (value, arrayOfUtilKeys) {
 }
 
 ValidatorBaseClass.prototype = Object.assign(ValidatorBaseClass.prototype, {
-  innerMap: validatorMap,
   exec: validate,
   asyncExec: asyncValidate
 })
