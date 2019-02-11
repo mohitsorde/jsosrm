@@ -1,12 +1,10 @@
 /**
  * Created By: Mohit Sorde
- * on: 07-February-2019
+ * on: 08-February-2019
  */
 'use strict'
 
 const GenericUtilityClass = require('./GenericUtilityClass')
-
-const validatorMap = {}
 
 /**
  * validates string provided contains only alphabetical characters
@@ -14,11 +12,6 @@ const validatorMap = {}
  */
 function aplhabetical (val) {
   return typeof val === 'string' && /^[a-zA-Z]+$/.test(val)
-}
-
-validatorMap['aplhabetical'] = {
-  desc: 'validates string provided contains only alphabetical characters',
-  impl: aplhabetical
 }
 
 /**
@@ -29,11 +22,6 @@ function dateOfBirth (val) {
   return /^[A-Za-z]+\s[0-9]{1,2},\s[0-9]{4}$/.test(val)
 }
 
-validatorMap['dateOfBirth'] = {
-  desc: 'validates string provided conforms to the pattern January 09, 2009',
-  impl: dateOfBirth
-}
-
 /**
  * validates string provided conforms to the pattern 09/2001
  * @param {string} val
@@ -42,22 +30,12 @@ function cardExpiry (val) {
   return /^[0-9]{1,2}\/[0-9]{4}$/.test(val)
 }
 
-validatorMap['cardExpiry'] = {
-  desc: 'validates string provided conforms to the pattern 09/2001',
-  impl: cardExpiry
-}
-
 /**
  * validates string provided contains only aplhanumeric characters
  * @param {string} val
  */
 function alphaNumeric (val) {
   return typeof val === 'string' && /^[a-zA-Z0-9]+$/.test(val)
-}
-
-validatorMap['alphaNumeric'] = {
-  desc: 'validates string provided contains only aplhanumeric characters',
-  impl: alphaNumeric
 }
 
 /**
@@ -69,14 +47,9 @@ function nameOnly (val) {
     return false
   }
   if (val.length === 1) {
-    return validatorMap['aplhabetical'](val)
+    return this.innerMap['aplhabetical']['impl'](val)
   }
   return /^[a-zA-Z][a-zA-Z. ,]*[a-zA-Z.]$/.test(val)
-}
-
-validatorMap['nameOnly'] = {
-  desc: 'ensures valid people names are allowed',
-  impl: nameOnly
 }
 
 /**
@@ -88,22 +61,12 @@ function emailId (val) {
   /// ^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 }
 
-validatorMap['emailId'] = {
-  desc: 'validates email pattern',
-  impl: emailId
-}
-
 /**
  * validates only positive integers are allowed
  * @param {*} val
  */
 function naturalNumber (val) {
   return /^[1-9][0-9]*$/.test(val)
-}
-
-validatorMap['naturalNumber'] = {
-  desc: 'validates only positive integers are allowed',
-  impl: naturalNumber
 }
 
 /**
@@ -114,11 +77,6 @@ function integerOnly (val) {
   return /^-?[1-9][0-9]*$/.test(val)
 }
 
-validatorMap['integerOnly'] = {
-  desc: 'validates only integers are allowed',
-  impl: integerOnly
-}
-
 /**
  * validates descimal numbers or their subset is allowed
  * @param {*} val
@@ -127,22 +85,12 @@ function floatingNumber (val) {
   return /^-?[0-9]+\.?[0-9]*$/.test(val)
 }
 
-validatorMap['floatingNumber'] = {
-  desc: 'validates postive or negative decimals is allowed',
-  impl: floatingNumber
-}
-
 /**
  * validates postive decimals is allowed
  * @param {*} val
  */
 function positiveFloatingNumber (val) {
-  return this.validatorMap['floatingNumber'](val) && parseFloat(val) > 0
-}
-
-validatorMap['positiveFloatingNumber'] = {
-  desc: 'validates only postive decimals is allowed',
-  impl: positiveFloatingNumber
+  return this.innerMap['floatingNumber']['impl'](val) && parseFloat(val) > 0
 }
 
 /**
@@ -150,12 +98,7 @@ validatorMap['positiveFloatingNumber'] = {
  * @param {*} val
  */
 function nonNegativeFloatingNumber (val) {
-  return this.validatorMap['floatingNumber'](val) && parseFloat(val) >= 0
-}
-
-validatorMap['nonNegativeFloatingNumber'] = {
-  desc: 'validates only non-negative decimals is allowed',
-  impl: nonNegativeFloatingNumber
+  return this.innerMap['floatingNumber']['impl'](val) && parseFloat(val) >= 0
 }
 
 /**
@@ -166,11 +109,6 @@ function addressOnly (val) {
   return /^[-0-9a-zA-Z./&`~@#()_"'., ]+$/.test(val)
 }
 
-validatorMap['addressOnly'] = {
-  desc: 'ensures valid address is provided',
-  impl: addressOnly
-}
-
 /**
  * ensures valid pin code is provided
  * @param {*} val
@@ -179,22 +117,12 @@ function pinCode (val) {
   return /^[-0-9a-zA-Z ]+$/.test(val)
 }
 
-validatorMap['pinCode'] = {
-  desc: 'ensures valid pin code is provided',
-  impl: pinCode
-}
-
 /**
  * validatesintegers greater than or equal to 0 are allowed
  * @param {*} val
  */
 function wholeNumber (val) {
   return /^[0-9]+$/.test(val)
-}
-
-validatorMap['wholeNumber'] = {
-  desc: 'ensures whole number is provided',
-  impl: wholeNumber
 }
 
 let innerMap = {
@@ -212,11 +140,6 @@ function booleanOnly (val) {
   }
 
   return false
-}
-
-validatorMap['booleanOnly'] = {
-  desc: 'ensures boolean or string that evaluates as boolean values is provided',
-  impl: booleanOnly
 }
 
 let maxCountList = [
@@ -265,20 +188,6 @@ function minCountHandler (minCount) {
   return innerHandler
 }
 
-for (let elem of maxCountList) {
-  validatorMap[ maxCountKey + String(elem) ] = {
-    desc: 'validates maximum number of characters in the string is ' + elem,
-    impl: maxCountHandler(elem)
-  }
-}
-
-for (let elem of minCountList) {
-  validatorMap[ minCountKey + String(elem) ] = {
-    desc: 'validates minimum number of characters in the string is ' + elem,
-    impl: minCountHandler(elem)
-  }
-}
-
 /**
  * validates phone number has no unexpected characters
  * @param {string} val
@@ -287,13 +196,86 @@ function phoneNumber (val) {
   return /^\+?[-()0-9]+$/.test(val)
 }
 
-validatorMap['phoneNumber'] = {
-  desc: 'ensures valid phone number characters are provided',
-  impl: phoneNumber
-}
-
 function ValidatorBaseClass () {
-  this.innerMap = validatorMap
+  this.innerMap = {
+    'aplhabetical': {
+      desc: 'validates string provided contains only alphabetical characters',
+      impl: aplhabetical
+    },
+    'dateOfBirth': {
+      desc: 'validates string provided conforms to the pattern January 09, 2009',
+      impl: dateOfBirth
+    },
+    'cardExpiry': {
+      desc: 'validates string provided conforms to the pattern 09/2001',
+      impl: cardExpiry
+    },
+    'alphaNumeric': {
+      desc: 'validates string provided contains only aplhanumeric characters',
+      impl: alphaNumeric
+    },
+    'nameOnly': {
+      desc: 'ensures valid people names are allowed',
+      impl: nameOnly
+    },
+    'emailId': {
+      desc: 'validates email pattern',
+      impl: emailId
+    },
+    'naturalNumber': {
+      desc: 'validates only positive integers are allowed',
+      impl: naturalNumber
+    },
+    'integerOnly': {
+      desc: 'validates only integers are allowed',
+      impl: integerOnly
+    },
+    'floatingNumber': {
+      desc: 'validates postive or negative decimals is allowed',
+      impl: floatingNumber
+    },
+    'positiveFloatingNumber': {
+      desc: 'validates only postive decimals is allowed',
+      impl: positiveFloatingNumber
+    },
+    'nonNegativeFloatingNumber': {
+      desc: 'validates only non-negative decimals is allowed',
+      impl: nonNegativeFloatingNumber
+    },
+    'addressOnly': {
+      desc: 'ensures valid address is provided',
+      impl: addressOnly
+    },
+    'pinCode': {
+      desc: 'ensures valid pin code is provided',
+      impl: pinCode
+    },
+    'wholeNumber': {
+      desc: 'ensures whole number is provided',
+      impl: wholeNumber
+    },
+    'booleanOnly': {
+      desc: 'ensures boolean or string that evaluates as boolean values is provided',
+      impl: booleanOnly
+    },
+    'phoneNumber': {
+      desc: 'ensures valid phone number characters are provided',
+      impl: phoneNumber
+    }
+  }
+  for (let elem of maxCountList) {
+    this.innerMap[ maxCountKey + String(elem) ] = {
+      desc: 'validates maximum number of characters in the string is ' + elem,
+      impl: maxCountHandler(elem)
+    }
+  }
+
+  for (let elem of minCountList) {
+    this.innerMap[ minCountKey + String(elem) ] = {
+      desc: 'validates minimum number of characters in the string is ' + elem,
+      impl: minCountHandler(elem)
+    }
+  }
   GenericUtilityClass.apply(this, arguments)
 }
 
@@ -309,7 +291,7 @@ async function asyncValidate (value, arrayOfUtilKeys) {
   let isValid
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
-    isValid = await this.innerMap[validatorKey](value)
+    isValid = await this.innerMap[validatorKey]['impl'](value)
     if (!isValid) {
       return false
     }
@@ -325,7 +307,7 @@ async function asyncValidate (value, arrayOfUtilKeys) {
 function validate (value, arrayOfUtilKeys) {
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
-    if (!this.innerMap[validatorKey](value)) {
+    if (!this.innerMap[validatorKey]['impl'](value)) {
       return false
     }
   }

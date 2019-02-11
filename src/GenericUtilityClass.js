@@ -51,7 +51,7 @@ function isValidUtilKey (utilKey) {
 function exec (value, arrayOfUtilKeys) {
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
-    value = this.innerMap[utilKey](value)
+    value = this.innerMap[utilKey]['impl'](value)
   }
   return true
 }
@@ -64,7 +64,7 @@ function exec (value, arrayOfUtilKeys) {
 async function asyncExec (value, arrayOfUtilKeys) {
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
-    value = await this.innerMap[utilKey](value)
+    value = await this.innerMap[utilKey]['impl'](value)
   }
   return true
 }
