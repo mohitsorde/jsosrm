@@ -35,6 +35,17 @@ function push (key, impl, desc) {
 }
 
 /**
+ * pushes a new validator to Base class or replaces existed validator with new implementation for the provided keys from the list
+ * @param {Object[]} arr
+ * @param {string} arr[].key
+ * @param {Function} arr[].impl
+ * @param {string} arr[].desc
+ */
+function pushAll (arr) {
+  arr.forEach(elem => this.push(elem.key, elem.impl, elem.desc))
+}
+
+/**
  * throws an error if valid utility key is not provided, else returns true
  * @param {string} utilKey
  */
@@ -72,6 +83,7 @@ async function asyncExec (value, arrayOfUtilKeys) {
 GenericUtilityClass.prototype = Object.assign(GenericUtilityClass.prototype, {
   listAll,
   push,
+  pushAll,
   exec,
   asyncExec,
   isValidUtilKey,
