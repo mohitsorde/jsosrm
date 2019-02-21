@@ -74,7 +74,7 @@ function naturalNumber (val) {
  * @param {*} val
  */
 function integerOnly (val) {
-  return /^-?[1-9][0-9]*$/.test(val)
+  return val === 0 || /^-?[1-9][0-9]*$/.test(val)
 }
 
 /**
@@ -106,15 +106,7 @@ function nonNegativeFloatingNumber (val) {
  * @param {string} val
  */
 function addressOnly (val) {
-  return /^[-0-9a-zA-Z./&`~@#()_"'., ]+$/.test(val)
-}
-
-/**
- * ensures valid pin code is provided
- * @param {*} val
- */
-function pinCode (val) {
-  return /^[-0-9a-zA-Z ]+$/.test(val)
+  return typeof val === 'string' && /^[-0-9a-zA-Z./&`~@#()_"'., ]+$/.test(val)
 }
 
 /**
@@ -245,10 +237,6 @@ function ValidatorBaseClass () {
     'addressOnly': {
       desc: 'ensures valid address is provided',
       impl: addressOnly
-    },
-    'pinCode': {
-      desc: 'ensures valid pin code is provided',
-      impl: pinCode
     },
     'wholeNumber': {
       desc: 'ensures whole number is provided',
