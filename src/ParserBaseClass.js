@@ -4,21 +4,13 @@
  */
 'use strict'
 
+const GenericParserClass = require('./GenericParserClass')
 const ValidatorBaseClass = require('./ValidatorBaseClass')
 const SetterBaseClass = require('./SetterBaseClass')
 
-function ParserClass (params, attrDefs) {
+function ParserBaseClass (params, attrDefs) {
   if (attrDefs) this._attrDefs = attrDefs
-  this.err = null
-  this.params = this.parseParams(params)
-}
-
-function getErr () {
-  return this.err
-}
-
-function getParams () {
-  return this.getErr() || this.params
+  GenericParserClass.apply(this, arguments)
 }
 
 function _validateAndParse (val, validatorArr, setterArr) {
@@ -31,15 +23,15 @@ function _validateAndParse (val, validatorArr, setterArr) {
   if (setterArr) return this.setter.exec(val, setterArr)
 }
 
-function _handleParser (paramObj, ParserClassArg) {
-  if (Array.isArray(ParserClassArg)) {
-    ParserClassArg = ParserClassArg[0]
+function _handleParser (paramObj, ParserBaseClassArg) {
+  if (Array.isArray(ParserBaseClassArg)) {
+    ParserBaseClassArg = ParserBaseClassArg[0]
     let parsedArr = []
     if (!Array.isArray(paramObj)) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      let parsedObj = (new ParserClassArg(elem)).getParams()
+      let parsedObj = (new ParserBaseClassArg(elem)).getParams()
       if (typeof parsedObj === 'object' && parsedObj['errCode']) {
         parsedArr = parsedObj
         break
@@ -48,7 +40,7 @@ function _handleParser (paramObj, ParserClassArg) {
     }
     return parsedArr
   }
-  return (new ParserClassArg(paramObj)).getParams()
+  return (new ParserBaseClassArg(paramObj)).getParams()
 }
 
 function parseParams (params) {
@@ -71,18 +63,16 @@ function parseParams (params) {
   return parsedObj
 }
 
-let _attrDefs = {}
+ParserBaseClass.prototype = Object.create(GenericParserClass.prototype)
 
-ParserClass.prototype = {
-  constructor: ParserClass,
-  getErr,
-  parseParams,
-  getParams,
-  _attrDefs,
+ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
+  constructor: ParserBaseClass,
+  _attrDefs: {},
   _validateAndParse,
   _handleParser,
+  parseParams,
   validator: new ValidatorBaseClass(),
   setter: new SetterBaseClass()
-}
+})
 
-module.exports = ParserClass
+module.exports = ParserBaseClass
