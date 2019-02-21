@@ -5,7 +5,7 @@ const assert = require('chai').assert
 const ValidatorBaseClass = require('./ValidatorBaseClass')
 
 describe('validators => ', () => {
-  let currValidator = []
+  let currValidationList = []
   let inputArr = []
   let validator = new ValidatorBaseClass()
 
@@ -15,131 +15,131 @@ describe('validators => ', () => {
 
   describe('aplhabetical', () => {
     before(() => {
-      currValidator.push('aplhabetical')
+      currValidationList.push('aplhabetical')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is pure string, irrespective of case sensitivity', () => {
       inputArr.push('testword', 'testWord', 'TESTWORD')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is type other than string or is string containing non alphabetical characters', () => {
       inputArr.push(false, 123, {}, [], undefined, null, '', 'sds0', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('dateOfBirth', () => {
     before(() => {
-      currValidator.push('dateOfBirth')
+      currValidationList.push('dateOfBirth')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input conforms to the pattern January 09, 2009', () => {
       inputArr.push('J 9, 0000', 'January 32, 1111')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input deviates from the pattern January 09, 2009', () => {
       inputArr.push('00/00/0000', 'Jan 0p, 8888', '99 99, 9999', '9')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('cardExpiry', () => {
     before(() => {
-      currValidator.push('cardExpiry')
+      currValidationList.push('cardExpiry')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input conforms to the pattern 09/2001', () => {
       inputArr.push('0/0000', '77/7777')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input deviates from the pattern 09/2001', () => {
       inputArr.push('/0000', 'xx/xxxx', '99 99, 9999', 99)
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('alphaNumeric', () => {
     before(() => {
-      currValidator.push('alphaNumeric')
+      currValidationList.push('alphaNumeric')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a string with aplhunumeric characters only', () => {
       inputArr.push('sfwefwefweffe', '2342342315464', 'q34q34324')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input includes characters other than alphanumeric', () => {
       inputArr.push('dfh3298uu 29340', 'sdjirr*sdwe', 99, {}, [])
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('nameOnly', () => {
     before(() => {
-      currValidator.push('nameOnly')
+      currValidationList.push('nameOnly')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input conforms to naming convention', () => {
       inputArr.push('Mr. Smith', 'the one', 'A. D. Julia', 'Bond, James')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input doesn\'t conform to naming convention', () => {
       inputArr.push('@neo', 'mi*shkov ach', 'ero 99 ero', 99, {}, [])
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('emailId', () => {
     before(() => {
-      currValidator.push('emailId')
+      currValidationList.push('emailId')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a valid email id', () => {
@@ -162,7 +162,7 @@ describe('validators => ', () => {
         // "user@[2001:DB8::1]"
       )
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
@@ -185,90 +185,90 @@ describe('validators => ', () => {
         ''
       )
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('naturalNumber', () => {
     before(() => {
-      currValidator.push('naturalNumber')
+      currValidationList.push('naturalNumber')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a natural number', () => {
       inputArr.push(112, 9)
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is anything other than a natural number', () => {
       inputArr.push(false, 123.01, 0, -3, -8.3, {}, [], undefined, null, '', 'sds0', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('integerOnly', () => {
     before(() => {
-      currValidator.push('integerOnly')
+      currValidationList.push('integerOnly')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is an integer', () => {
       inputArr.push(-112, 9, 0)
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is anything other than an integer', () => {
       inputArr.push(false, 123.01, -8.3, {}, [], undefined, null, '', 'sds0', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('floatingNumber', () => {
     before(() => {
-      currValidator.push('floatingNumber')
+      currValidationList.push('floatingNumber')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a decimal', () => {
       inputArr.push(-112, 9, 0, 0.002, -1.232)
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is anything other than a decimal', () => {
       inputArr.push(false, {}, [], undefined, null, '', 'sds0', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('addressOnly', () => {
     before(() => {
-      currValidator.push('addressOnly')
+      currValidationList.push('addressOnly')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a valid address format', () => {
@@ -279,110 +279,163 @@ describe('validators => ', () => {
         'K3, Lane No. 04, Chennai (38392)'
       )
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is not a valid address', () => {
       inputArr.push(false, {}, [], undefined, null, '', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('booleanOnly', () => {
     before(() => {
-      currValidator.push('booleanOnly')
+      currValidationList.push('booleanOnly')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if the input is a decimal', () => {
       inputArr.push(true, false, 'true', 'false')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if input is anything other than a decimal', () => {
       inputArr.push(1, 0, {}, [], undefined, null, '', "sd<script src=''></script>", 'True', 'False')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('phoneNumber', () => {
     before(() => {
-      currValidator.push('phoneNumber')
+      currValidationList.push('phoneNumber')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if valid phone number characters are provided', () => {
       inputArr.push('+91393949323', '(020) 999 - 329439')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if valid phone number characters are not provided', () => {
       inputArr.push({}, [], '*39439', 'q230230', undefined, null, '', "sd<script src=''></script>", 'True', 'False')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('max number of allowed characters', () => {
     before(() => {
-      currValidator.push('maxChar_3')
+      currValidationList.push('maxChar_3')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if number of input characters does not exceed the upper limit', () => {
       inputArr.push('*', '8d#', 'l+', '0.0')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if number of input characters exceed the upper limit', () => {
       inputArr.push('*39439', '23.0', "sd<script src=''></script>")
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
 
   describe('min number of expected characters', () => {
     before(() => {
-      currValidator.push('minChar_3')
+      currValidationList.push('minChar_3')
     })
 
     after(() => {
-      currValidator.length = 0
+      currValidationList.length = 0
     })
 
     it('returned value is true if number of input characters does not exceed the upper limit', () => {
       inputArr.push('8d#', '0.0', '23.0')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })
     })
 
     it('returned value is false if number of input characters exceed the upper limit', () => {
       inputArr.push('l+', '*', '')
       inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
+      })
+    })
+  })
+
+  describe('adding custom validator', () => {
+    let validator = new ValidatorBaseClass()
+    validator.pushAll([{
+      'key': 'alwaysTrue',
+      'impl': function (val) { return true },
+      'desc': 'always returns true for any input'
+    }])
+    before(() => {
+      currValidationList.push('alwaysTrue')
+    })
+
+    after(() => {
+      currValidationList.length = 0
+    })
+
+    it('returned value is true if number of input characters does not exceed the upper limit', () => {
+      inputArr.push(false, 123, {}, [], undefined, null, '', 'sds0', "sd<script src=''></script>")
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
+      })
+    })
+  })
+
+  describe('override existing validator', () => {
+    let validator = new ValidatorBaseClass()
+    validator.pushAll([{
+      'key': 'aplhabetical',
+      'impl': function (val) { return true },
+      'desc': 'always returns true for any input'
+    }])
+    before(() => {
+      currValidationList.push('aplhabetical', 'maxChar_3')
+    })
+
+    after(() => {
+      currValidationList.length = 0
+    })
+
+    it('returned value is true if number of input characters does not exceed the upper limit irrespective of the characters not being strictly alphabetical', () => {
+      inputArr.push('aaa', '802', '*r', '')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
+      })
+    })
+
+    it('returned value is false if number of input characters exceed the upper limit even if the characters are strictly alphabetical', () => {
+      inputArr.push('aaar', 'AWQWEW')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidationList), false, 'failed for input => ' + elem)
       })
     })
   })
