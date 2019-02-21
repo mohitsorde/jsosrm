@@ -314,4 +314,76 @@ describe('validators => ', () => {
       })
     })
   })
+
+  describe('phoneNumber', () => {
+    before(() => {
+      currValidator.push('phoneNumber')
+    })
+
+    after(() => {
+      currValidator.length = 0
+    })
+
+    it('returned value is true if valid phone number characters are provided', () => {
+      inputArr.push('+91393949323', '(020) 999 - 329439')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+      })
+    })
+
+    it('returned value is false if valid phone number characters are not provided', () => {
+      inputArr.push({}, [], '*39439', 'q230230', undefined, null, '', "sd<script src=''></script>", 'True', 'False')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+      })
+    })
+  })
+
+  describe('max number of allowed characters', () => {
+    before(() => {
+      currValidator.push('maxChar_3')
+    })
+
+    after(() => {
+      currValidator.length = 0
+    })
+
+    it('returned value is true if number of input characters does not exceed the upper limit', () => {
+      inputArr.push('*', '8d#', 'l+', '0.0')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+      })
+    })
+
+    it('returned value is false if number of input characters exceed the upper limit', () => {
+      inputArr.push('*39439', '23.0', "sd<script src=''></script>")
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+      })
+    })
+  })
+
+  describe('min number of expected characters', () => {
+    before(() => {
+      currValidator.push('minChar_3')
+    })
+
+    after(() => {
+      currValidator.length = 0
+    })
+
+    it('returned value is true if number of input characters does not exceed the upper limit', () => {
+      inputArr.push('8d#', '0.0', '23.0')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), true, 'failed for input => ' + elem)
+      })
+    })
+
+    it('returned value is false if number of input characters exceed the upper limit', () => {
+      inputArr.push('l+', '*', '')
+      inputArr.forEach((elem) => {
+        assert.strictEqual(validator.exec(elem, currValidator), false, 'failed for input => ' + elem)
+      })
+    })
+  })
 })

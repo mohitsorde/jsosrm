@@ -185,7 +185,7 @@ function minCountHandler (minCount) {
  * @param {string} val
  */
 function phoneNumber (val) {
-  return /^\+?[-()0-9]+$/.test(val)
+  return /^\+?[-()0-9\s]+$/.test(val)
 }
 
 function ValidatorBaseClass () {
@@ -252,14 +252,14 @@ function ValidatorBaseClass () {
     }
   }
   for (let elem of maxCountList) {
-    this.innerMap[ maxCountKey + String(elem) ] = {
+    this.innerMap[ maxCountKey + '_' + String(elem) ] = {
       desc: 'validates maximum number of characters in the string is ' + elem,
       impl: maxCountHandler(elem)
     }
   }
 
   for (let elem of minCountList) {
-    this.innerMap[ minCountKey + String(elem) ] = {
+    this.innerMap[ minCountKey + '_' + String(elem) ] = {
       desc: 'validates minimum number of characters in the string is ' + elem,
       impl: minCountHandler(elem)
     }
