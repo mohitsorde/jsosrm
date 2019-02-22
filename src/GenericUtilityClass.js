@@ -62,9 +62,9 @@ function isValidUtilKey (utilKey) {
 function exec (value, arrayOfUtilKeys) {
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
-    value = this.innerMap[utilKey]['impl'](value)
+    value = this.innerMap[utilKey]['impl'].call(this, value)
   }
-  return true
+  return value
 }
 
 /**
@@ -75,9 +75,9 @@ function exec (value, arrayOfUtilKeys) {
 async function asyncExec (value, arrayOfUtilKeys) {
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
-    value = await this.innerMap[utilKey]['impl'](value)
+    value = await this.innerMap[utilKey]['impl'].call(this, value)
   }
-  return true
+  return value
 }
 
 GenericUtilityClass.prototype = Object.assign(GenericUtilityClass.prototype, {

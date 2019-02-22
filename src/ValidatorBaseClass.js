@@ -279,7 +279,7 @@ async function asyncValidate (value, arrayOfUtilKeys) {
   let isValid
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
-    isValid = await this.innerMap[validatorKey]['impl'](value)
+    isValid = await this.innerMap[validatorKey]['impl'].call(this, value)
     if (!isValid) {
       return false
     }
@@ -295,7 +295,7 @@ async function asyncValidate (value, arrayOfUtilKeys) {
 function validate (value, arrayOfUtilKeys) {
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
-    if (!this.innerMap[validatorKey]['impl'](value)) {
+    if (!this.innerMap[validatorKey]['impl'].call(this, value)) {
       return false
     }
   }

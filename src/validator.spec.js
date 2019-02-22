@@ -119,7 +119,7 @@ describe('validators => ', () => {
     })
 
     it('returned value is true if the input conforms to naming convention', () => {
-      inputArr.push('Mr. Smith', 'the one', 'A. D. Julia', 'Bond, James')
+      inputArr.push('Mr. Smith', 'the one', 'A. D. Julia', 'Bond, James', 'l')
       inputArr.forEach((elem) => {
         assert.strictEqual(validator.exec(elem, currValidationList), true, 'failed for input => ' + elem)
       })

@@ -31,7 +31,7 @@ function dateInMilliSec (val) {
 }
 
 /**
- *  sets default day to 01 for input
+ *  sets default day to 01 for input and format the output as MM/01/YYYY
  * @param {string} val - string of the format MM/YYYY
  */
 function formatCardExpiry (val) {
