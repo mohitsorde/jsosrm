@@ -23,15 +23,15 @@ function _validateAndParse (val, validatorArr, setterArr) {
   if (setterArr) return this.setter.exec(val, setterArr)
 }
 
-function _handleParser (paramObj, ParserBaseClassArg) {
-  if (Array.isArray(ParserBaseClassArg)) {
-    ParserBaseClassArg = ParserBaseClassArg[0]
+function _handleParser (paramObj, GenericParserClassArg) {
+  if (Array.isArray(GenericParserClassArg)) {
+    GenericParserClassArg = GenericParserClassArg[0]
     let parsedArr = []
     if (!Array.isArray(paramObj)) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      let parsedObj = (new ParserBaseClassArg(elem)).getParams()
+      let parsedObj = (new GenericParserClassArg(elem)).getParams()
       if (typeof parsedObj === 'object' && parsedObj['errCode']) {
         parsedArr = parsedObj
         break
@@ -40,7 +40,7 @@ function _handleParser (paramObj, ParserBaseClassArg) {
     }
     return parsedArr
   }
-  return (new ParserBaseClassArg(paramObj)).getParams()
+  return (new GenericParserClassArg(paramObj)).getParams()
 }
 
 function parseParams (params) {

@@ -15,17 +15,16 @@ function ReverseParserBaseClass (params, attrDefs) {
 function _handleParser (paramObj, GenericParserClassArg) {
   if (Array.isArray(GenericParserClassArg)) {
     GenericParserClassArg = GenericParserClassArg[0]
-    let attrDef = (new GenericParserClassArg({}))._attrDefs
     let parsedArr = []
     if (!Array.isArray(paramObj)) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      parsedArr.push((new ReverseParserBaseClass(elem, attrDef).getParams()))
+      parsedArr.push((new GenericParserClassArg(elem)).getParams())
     }
     return parsedArr
   }
-  return (new ReverseParserBaseClass(paramObj, (new GenericParserClassArg({}))._attrDefs)).getParams()
+  return (new GenericParserClassArg(paramObj)).getParams()
 }
 
 function parseParams (params) {
