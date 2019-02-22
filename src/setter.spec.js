@@ -54,4 +54,21 @@ describe('setter => ', () => {
       })
     })
   })
+
+  describe('chaining of setters work', () => {
+    before(() => {
+      currSetterList.push('formatCardExpiry', 'dateInMilliSec')
+    })
+
+    after(() => {
+      currSetterList.length = 0
+    })
+
+    it('convert card expiry date to complete date format and then convert the val to milliseconds', () => {
+      inputArr.push('02/2022')
+      inputArr.forEach((elem, index) => {
+        assert.strictEqual(setter.exec(elem, currSetterList), (new Date('02/01/2022')).getTime(), 'failed for input => ' + elem)
+      })
+    })
+  })
 })
