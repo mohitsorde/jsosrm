@@ -4,10 +4,9 @@ const assert = require('chai').assert
 
 const ParserBaseClass = require('./ParserBaseClass')
 const SetterBaseClass = require('./SetterBaseClass')
-// const ValidatorBaseClass = require('./ValidatorBaseClass')
+const ValidatorBaseClass = require('./ValidatorBaseClass')
 
 const setter = new SetterBaseClass()
-// const validator = new ValidatorBaseClass()
 
 let attrName = 'testKey'
 let attrVal = 'testVal'
@@ -69,6 +68,95 @@ describe('parse input object as per schema defined =>', () => {
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
+    })
+
+    it('parser, custom validator and custom setter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return /\*/.test(val)
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return val.replace(/\*/g, '')
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'rise*up'
+        })
+      }
+      let attrDef = attrDefgen(null, null, SubClass, outerAttr)
+      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.notExists(outputObj.errCode, 'no error found')
+      assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
+    })
+  })
+
+  describe('parser is array => ', () => {
+    let setterArr = ['toLower']
+    let validatorArr = ['aplhabetical']
+    let outerAttr = 'outerAttr'
+
+    function SubClass (params, attrDefs) {
+      ParserBaseClass.apply(this, arguments)
+    }
+    SubClass.prototype = Object.create(ParserBaseClass.prototype)
+    SubClass.prototype.constructor = SubClass
+    SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+
+    let attrDef = attrDefgen(null, null, [SubClass], outerAttr)
+
+    it('input is not array', () => {
+      let obj = {
+        [outerAttr]: inputObj
+      }
+      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.notExists(outputObj.errCode, 'no error found')
+      assert.strictEqual(outputObj[outerAttr][0][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
+    })
+
+    it('input is array', () => {
+      let obj = {
+        [outerAttr]: [inputObj]
+      }
+      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.notExists(outputObj.errCode, 'no error found')
+      assert.strictEqual(outputObj[outerAttr][0][attrName], setter.exec(obj[outerAttr][0][attrName], setterArr))
+    })
+  })
+
+  describe('parser fails =>', () => {
+    it('validator and setter =>', () => {
+      let setterArr = ['toLower']
+      let validatorArr = ['aplhabetical']
+      let attrDef = attrDefgen(validatorArr, setterArr)
+      let parsedObj = new ParserBaseClass(Object.assign({}, inputObj, {
+        [attrName]: '12213'
+      }), attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.exists(outputObj, 'errCode', 'expected error found')
+      assert.strictEqual(outputObj.errParam, attrName)
     })
   })
 })
