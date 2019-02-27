@@ -276,6 +276,7 @@ ValidatorBaseClass.prototype.constructor = ValidatorBaseClass
  * @param {*} arrayOfUtilKeys
  */
 async function asyncValidate (value, arrayOfUtilKeys) {
+  arrayOfUtilKeys = arrayOfUtilKeys || []
   let isValid
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
@@ -293,6 +294,7 @@ async function asyncValidate (value, arrayOfUtilKeys) {
  * @param {*} arrayOfUtilKeys
  */
 function validate (value, arrayOfUtilKeys) {
+  arrayOfUtilKeys = arrayOfUtilKeys || []
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
     if (!this.innerMap[validatorKey]['impl'].call(this, value)) {

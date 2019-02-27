@@ -7,8 +7,9 @@
 const GenericParserClass = require('./GenericParserClass')
 const GetterBaseClass = require('./GetterBaseClass')
 
-function ReverseParserBaseClass (params, attrDefs) {
+function ReverseParserBaseClass (params, attrDefs, getter) {
   if (attrDefs) this._attrDefs = attrDefs
+  if (getter) this.getter = getter
   GenericParserClass.apply(this, arguments)
 }
 
@@ -20,11 +21,11 @@ function _handleParser (paramObj, GenericParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      parsedArr.push((new GenericParserClassArg(elem)).getParams())
+      parsedArr.push((new GenericParserClassArg()).getReverseParams(elem))
     }
     return parsedArr
   }
-  return (new GenericParserClassArg(paramObj)).getParams()
+  return (new GenericParserClassArg()).getReverseParams(paramObj)
 }
 
 function parseParams (params) {

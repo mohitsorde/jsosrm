@@ -7,6 +7,8 @@
 const GenericParserClass = require('./GenericParserClass')
 const ValidatorBaseClass = require('./ValidatorBaseClass')
 const SetterBaseClass = require('./SetterBaseClass')
+const ReverseParseBaseClass = require('./ReverseParseBaseClass')
+const GetterBaseClass = require('./GetterBaseClass')
 
 function ParserBaseClass (params, attrDefs) {
   if (attrDefs) this._attrDefs = attrDefs
@@ -20,7 +22,7 @@ function _validateAndParse (val, validatorArr, setterArr) {
     }
   }
 
-  if (setterArr) return this.setter.exec(val, setterArr)
+  return this.setter.exec(val, setterArr)
 }
 
 function _handleParser (paramObj, GenericParserClassArg) {
@@ -63,6 +65,17 @@ function parseParams (params) {
   return parsedObj
 }
 
+function getReverseParams (params) {
+  if (!params) {
+    if (!this.getErr()) params = params || this.getParams()
+    else return this.getErr()
+  }
+  if (!this.reverseParams) {
+    this.reverseParams = new ReverseParseBaseClass(params, this._attrDefs, this.getter)
+  }
+  return this.reverseParams.getParams()
+}
+
 ParserBaseClass.prototype = Object.create(GenericParserClass.prototype)
 
 ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
@@ -72,7 +85,9 @@ ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
   _handleParser,
   parseParams,
   validator: new ValidatorBaseClass(),
-  setter: new SetterBaseClass()
+  setter: new SetterBaseClass(),
+  getter: new GetterBaseClass(),
+  getReverseParams
 })
 
 module.exports = ParserBaseClass

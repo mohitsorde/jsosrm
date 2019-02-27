@@ -60,6 +60,7 @@ function isValidUtilKey (utilKey) {
  * @param {*} arrayOfUtilKeys
  */
 function exec (value, arrayOfUtilKeys) {
+  arrayOfUtilKeys = arrayOfUtilKeys || []
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
     value = this.innerMap[utilKey]['impl'].call(this, value)
@@ -73,6 +74,7 @@ function exec (value, arrayOfUtilKeys) {
  * @param {*} arrayOfUtilKeys
  */
 async function asyncExec (value, arrayOfUtilKeys) {
+  arrayOfUtilKeys = arrayOfUtilKeys || []
   for (let utilKey of arrayOfUtilKeys) {
     this.isValidUtilKey(utilKey)
     value = await this.innerMap[utilKey]['impl'].call(this, value)
