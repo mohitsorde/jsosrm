@@ -69,6 +69,8 @@ function getReverseParams (params) {
   if (!params) {
     if (!this.getErr()) params = params || this.getParams()
     else return this.getErr()
+  } else {
+    return (new ReverseParseBaseClass(params, this._attrDefs, this.getter)).getParams()
   }
   if (!this.reverseParams) {
     this.reverseParams = new ReverseParseBaseClass(params, this._attrDefs, this.getter)
