@@ -52,7 +52,7 @@ describe('reverse parse input object as per schema defined =>', function () {
       try {
         assert.strictEqual(outputObj[attrName], getter.exec(inputObj[attrName], ['asLower']) + '*')
       } catch (e) {
-        done(e)
+        return done(e)
       }
       done()
     })
