@@ -6,6 +6,5 @@ module.exports = {
   ValidatorBaseClass: BaseClasses.ValidatorBaseClass,
   SetterBaseClass: BaseClasses.SetterBaseClass,
   GetterBaseClass: BaseClasses.GetterBaseClass,
-  ParserBaseClass: BaseClasses.ParserBaseClass,
-  ReverseParseBaseClass: BaseClasses.ReverseParseBaseClass
+  ParserBaseClass: BaseClasses.ParserBaseClass
 }

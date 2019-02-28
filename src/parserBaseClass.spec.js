@@ -5,7 +5,9 @@ const assert = require('chai').assert
 const ParserBaseClass = require('./ParserBaseClass')
 const SetterBaseClass = require('./SetterBaseClass')
 const ValidatorBaseClass = require('./ValidatorBaseClass')
+const GetterBaseClass = require('./GetterBaseClass')
 
+const getter = new GetterBaseClass()
 const setter = new SetterBaseClass()
 
 let attrName = 'testKey'
@@ -157,6 +159,60 @@ describe('parse input object as per schema defined =>', () => {
       let outputObj = parsedObj.getParams()
       assert.exists(outputObj, 'errCode', 'expected error found')
       assert.strictEqual(outputObj.errParam, attrName)
+    })
+  })
+
+  describe('reverse the parsed object as per schema defined =>', () => {
+    it('parser, custom validator,custom setter and custom getter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype._attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return /\*/.test(val)
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return val.replace(/\*/g, '')
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return val + '*'
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'rise*up'
+        })
+      }
+      let attrDef = attrDefgen(null, null, SubClass, outerAttr)
+      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.notExists(outputObj.errCode, 'no error found')
+      assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
+      outputObj = parsedObj.getReverseParams()
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName], ['customSetter']), ['asLower']) + '*')
     })
   })
 })
