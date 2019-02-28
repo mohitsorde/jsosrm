@@ -163,7 +163,7 @@ describe('parse input object as per schema defined =>', () => {
   })
 
   describe('reverse the parsed object as per schema defined =>', () => {
-    it('parser, custom validator,custom setter and custom getter =>', () => {
+    it('parser, custom validator,custom setter and custom getter =>', function () {
       let setterArr = ['customSetter', 'toUpper']
       let validatorArr = ['customValidator']
       let getterArr = ['asLower', 'appendAsterisk']
@@ -213,6 +213,66 @@ describe('parse input object as per schema defined =>', () => {
       assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
       outputObj = parsedObj.getReverseParams()
       assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName], ['customSetter']), ['asLower']) + '*')
+    })
+
+    it('parser, custom async validator,custom async setter and custom async getter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype._attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'rise*up'
+        })
+      }
+      let attrDef = attrDefgen(null, null, SubClass, outerAttr)
+      let parsedObj = new ParserBaseClass(obj, attrDef, true)
+      return parsedObj.getParams().then((outputObj) => {
+        assert.notExists(outputObj.errCode, 'no error found')
+        assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
+        return parsedObj.getReverseParams().then((outputObj) => {
+          assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+        })
+      })
     })
   })
 })

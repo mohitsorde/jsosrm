@@ -78,7 +78,7 @@ async function _asyncvalidateAndParse (val, validatorArr, setterArr) {
     return Promise.reject(err)
   }
 
-  return this.setter.asynExec(val, setterArr)
+  return this.setter.asyncExec(val, setterArr)
 }
 
 async function _asyncHandleParser (paramObj, GenericParserClassArg) {
