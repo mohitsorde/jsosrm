@@ -10,7 +10,16 @@ const SetterBaseClass = require('./SetterBaseClass')
 const ReverseParseBaseClass = require('./ReverseParseBaseClass')
 const GetterBaseClass = require('./GetterBaseClass')
 
-function ParserBaseClass (params, attrDefs, asyncHandle) {
+const checkStrictNull = (val) => {
+  let typeOfVal = typeof val
+  if (typeOfVal === 'boolean' || typeOfVal === 'number') {
+    return false
+  }
+  return !val
+}
+
+function ParserBaseClass (params, attrDefs, asyncHandle, update) {
+  this.update = update
   this.asyncHandle = asyncHandle
   if (attrDefs) this._attrDefs = attrDefs
   GenericParserClass.apply(this, arguments)
@@ -34,7 +43,7 @@ function _handleParser (paramObj, GenericParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      let parsedObj = (new GenericParserClassArg(elem)).getParams()
+      let parsedObj = (new GenericParserClassArg(elem, null, false, this.update)).getParams()
       if (typeof parsedObj === 'object' && parsedObj['errCode']) {
         parsedArr = parsedObj
         break
@@ -43,7 +52,7 @@ function _handleParser (paramObj, GenericParserClassArg) {
     }
     return parsedArr
   }
-  return (new GenericParserClassArg(paramObj)).getParams()
+  return (new GenericParserClassArg(paramObj, null, false, this.update)).getParams()
 }
 
 function parseParams (params) {
@@ -51,10 +60,21 @@ function parseParams (params) {
     return this._asyncParseParams(params)
   }
   let parsedObj = Object.assign({}, params) // = {} to skip attributes not defined in the schema
-  for (let key in params) {
+  for (let key in this._attrDefs) {
     let attrDef = this._attrDefs[key]
-    if (!attrDef) { continue }
-    if (attrDef['optional'] && !params[key]) continue
+    if (checkStrictNull(params[key])) {
+      if (attrDef['optional']) continue
+      if (this.update && params.hasOwnProperty(key)) {
+        delete parsedObj[key]
+        continue
+      }
+      parsedObj[key] = {
+        errCode: 'NULL_INPUT',
+        errParam: key
+      }
+      this.err = parsedObj[key]
+      break
+    }
     if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
     else if (attrDef['validators']) parsedObj[key] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
     else parsedObj[key] = this.setter.exec(params[key], attrDef['setters'])
@@ -91,7 +111,7 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
     for (let elem of paramObj) {
       let parsedObj
       try {
-        parsedObj = await (new GenericParserClassArg(elem, null, true)).getParams()
+        parsedObj = await (new GenericParserClassArg(elem, null, true, this.update)).getParams()
       } catch (e) {
         return Promise.reject(e)
       }
@@ -99,15 +119,26 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
     }
     return parsedArr
   }
-  return (new GenericParserClassArg(paramObj, null, true)).getParams()
+  return (new GenericParserClassArg(paramObj, null, true, this.update)).getParams()
 }
 
 async function _asyncParseParams (params) {
   let parsedObj = Object.assign({}, params) // = {} to skip attributes not defined in the schema
-  for (let key in params) {
+  for (let key in this._attrDefs) {
     let attrDef = this._attrDefs[key]
-    if (!attrDef) { continue }
-    if (attrDef['optional'] && !params[key]) continue
+    if (checkStrictNull(params[key])) {
+      if (attrDef['optional']) continue
+      if (this.update && params.hasOwnProperty(key)) {
+        delete parsedObj[key]
+        continue
+      }
+      parsedObj[key] = {
+        errCode: 'NULL_INPUT',
+        errParam: key
+      }
+      this.err = Promise.reject(parsedObj[key])
+      return this.err
+    }
     try {
       if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
       else if (attrDef['validators']) parsedObj[key] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
