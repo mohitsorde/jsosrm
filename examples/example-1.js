@@ -6,6 +6,7 @@ let input = {
   'emailId': 'example1@domain.com',
   'firstName': 'exAmple. oNe',
   'lastName': 'teSt',
+  'hobbies': ['tennis', 'cricket'],
   'shippingAddress': [
     {
       'lineOne': '#41, teSt SiTe',

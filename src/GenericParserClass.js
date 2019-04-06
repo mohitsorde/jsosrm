@@ -6,7 +6,7 @@
 
 function GenericParserClass (params) {
   this.err = null
-  this.params = this.parseParams(params)
+  this.params = this.parseParams(params || {})
 }
 
 function getErr () {

@@ -41,6 +41,11 @@ module.exports = {
     ],
     'optional': true
   },
+  'hobbies': [{
+    'validators': ['aplhabetical'],
+    'setters': ['toUpper'],
+    'getters': ['asLower']
+  }],
   'shippingAddress': {
     'parser': [UserAddressParser]
   },

@@ -291,9 +291,9 @@ describe('validators => ', () => {
     })
   })
 
-  describe('booleanOnly', () => {
+  describe('isBoolean', () => {
     before(() => {
-      currValidationList.push('booleanOnly')
+      currValidationList.push('isBoolean')
     })
 
     after(() => {

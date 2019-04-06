@@ -22,11 +22,11 @@ function _handleParser (paramObj, ParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      parsedArr.push((new ParserClassArg()).getReverseParams(elem))
+      parsedArr.push((new ParserClassArg(null, null, false, true)).getReverseParams(elem))
     }
     return parsedArr
   }
-  return (new ParserClassArg()).getReverseParams(paramObj)
+  return (new ParserClassArg(null, null, false, true)).getReverseParams(paramObj)
 }
 
 function parseParams (params) {
@@ -38,7 +38,8 @@ function parseParams (params) {
       parsedObj[key] = params[key]
       continue
     }
-    if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
+    if (Array.isArray(attrDef) && Array.isArray(params[key])) parsedObj[key] = params[key].map(elem => this.getter.exec(elem, attrDef[0]['getters']))
+    else if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
     else if (!attrDef['getters']) {
       parsedObj[key] = params[key]
       continue
@@ -56,12 +57,12 @@ async function _asyncHandleParser (paramObj, ParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      let revParsedObj = await (new ParserClassArg()).getReverseParams(elem, true)
+      let revParsedObj = await (new ParserClassArg(null, null, true, true)).getReverseParams(elem, true)
       parsedArr.push(revParsedObj)
     }
     return parsedArr
   }
-  return (new ParserClassArg()).getReverseParams(paramObj, true)
+  return (new ParserClassArg(null, null, true, true)).getReverseParams(paramObj, true)
 }
 
 async function _asyncParseParams (params) {
@@ -72,7 +73,12 @@ async function _asyncParseParams (params) {
       parsedObj[key] = params[key]
       continue
     }
-    if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
+    if (Array.isArray(attrDef) && Array.isArray(params[key])) {
+      parsedObj[key] = params[key].map(async (elem) => {
+        let val = await this.getter.asyncExec(elem, attrDef[0]['getters'])
+        return val
+      })
+    } else if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
     else if (!attrDef['getters']) {
       parsedObj[key] = params[key]
       continue

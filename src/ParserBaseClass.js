@@ -55,6 +55,20 @@ function _handleParser (paramObj, GenericParserClassArg) {
   return (new GenericParserClassArg(paramObj, null, false, this.update)).getParams()
 }
 
+function _handleArray (paramArr, attrDef) {
+  let parsedArr = []
+  if (!Array.isArray(paramArr)) paramArr = [paramArr]
+  for (let elem of paramArr) {
+    let parsedObj = this._validateAndParse(elem, attrDef['validators'], attrDef['setters'])
+    if (typeof parsedObj === 'object' && parsedObj['errCode']) {
+      parsedArr = parsedObj
+      break
+    }
+    parsedArr.push(parsedObj)
+  }
+  return parsedArr
+}
+
 function parseParams (params) {
   if (this.asyncHandle) {
     return this._asyncParseParams(params)
@@ -64,7 +78,7 @@ function parseParams (params) {
     let attrDef = this._attrDefs[key]
     if (checkStrictNull(params[key])) {
       if (attrDef['optional']) continue
-      if (this.update && params.hasOwnProperty(key)) {
+      if (this.update) {
         delete parsedObj[key]
         continue
       }
@@ -75,9 +89,9 @@ function parseParams (params) {
       this.err = parsedObj[key]
       break
     }
-    if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
-    else if (attrDef['validators']) parsedObj[key] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
-    else parsedObj[key] = this.setter.exec(params[key], attrDef['setters'])
+    if (Array.isArray(attrDef)) parsedObj[key] = this._handleArray(params[key], attrDef[0])
+    else if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
+    else parsedObj[key] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
 
     if (typeof parsedObj[key] === 'object' && parsedObj[key]['errCode']) {
       parsedObj[key]['errParam'] = parsedObj[key]['errParam'] || key
@@ -122,6 +136,21 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
   return (new GenericParserClassArg(paramObj, null, true, this.update)).getParams()
 }
 
+async function _asyncHandleArray (paramArr, attrDef) {
+  let parsedArr = []
+  if (!Array.isArray(paramArr)) paramArr = [paramArr]
+  for (let elem of paramArr) {
+    let parsedObj
+    try {
+      parsedObj = await this._asyncvalidateAndParse(elem, attrDef['validators'], attrDef['setters'])
+    } catch (e) {
+      return Promise.reject(e)
+    }
+    parsedArr.push(parsedObj)
+  }
+  return parsedArr
+}
+
 async function _asyncParseParams (params) {
   let parsedObj = Object.assign({}, params) // = {} to skip attributes not defined in the schema
   for (let key in this._attrDefs) {
@@ -140,9 +169,9 @@ async function _asyncParseParams (params) {
       return this.err
     }
     try {
-      if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
-      else if (attrDef['validators']) parsedObj[key] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
-      else parsedObj[key] = await this.setter.asyncExec(params[key], attrDef['setters'])
+      if (Array.isArray(attrDef)) parsedObj[key] = await this._asyncHandleArray(params[key], attrDef[0])
+      else if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
+      else parsedObj[key] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
     } catch (e) {
       if (typeof e === 'object' && e['errCode']) {
         parsedObj[key]['errParam'] = e['errParam'] || key
@@ -198,6 +227,8 @@ ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
   _asyncHandleParser,
   _asyncvalidateAndParse,
   _asyncReverseParams,
+  _handleArray,
+  _asyncHandleArray,
   parseParams,
   validator: new ValidatorBaseClass(),
   setter: new SetterBaseClass(),

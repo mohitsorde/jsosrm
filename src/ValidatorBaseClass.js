@@ -122,18 +122,6 @@ let innerMap = {
   'false': 0
 }
 
-/**
- * ensures boolean or string that evaluates as boolean values is provided
- * @param {*} val
- */
-function booleanOnly (val) {
-  if (typeof val === 'boolean' || innerMap.hasOwnProperty(val)) {
-    return true
-  }
-
-  return false
-}
-
 let maxCountList = [
   2,
   3,
@@ -188,8 +176,24 @@ function phoneNumber (val) {
   return /^\+?[-()0-9\s]+$/.test(val)
 }
 
+function isString (val) {
+  return typeof val === 'string'
+}
+
+function isBoolean (val) {
+  return typeof val === 'boolean'
+}
+
 function ValidatorBaseClass () {
   this.innerMap = {
+    'isString': {
+      desc: 'validates value is of type string',
+      impl: isString
+    },
+    'isBoolean': {
+      desc: 'validates value is of type boolean',
+      impl: isBoolean
+    },
     'aplhabetical': {
       desc: 'validates string provided contains only alphabetical characters',
       impl: aplhabetical
@@ -241,10 +245,6 @@ function ValidatorBaseClass () {
     'wholeNumber': {
       desc: 'ensures whole number is provided',
       impl: wholeNumber
-    },
-    'booleanOnly': {
-      desc: 'ensures boolean or string that evaluates as boolean values is provided',
-      impl: booleanOnly
     },
     'phoneNumber': {
       desc: 'ensures valid phone number characters are provided',
