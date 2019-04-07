@@ -26,9 +26,11 @@ function ParserBaseClass (params, attrDefs, asyncHandle, update) {
 }
 
 function _validateAndParse (val, validatorArr, setterArr) {
-  if (!this.validator.exec(val, validatorArr)) {
+  let validationRes = this.validator.exec(val, validatorArr)
+  if (!validationRes.isValid) {
     return {
-      errCode: 'INVALID_INPUT'
+      errCode: 'INVALID_INPUT',
+      testKey: validationRes.testKey
     }
   }
 
@@ -89,13 +91,21 @@ function parseParams (params) {
       this.err = parsedObj[key]
       break
     }
-    if (Array.isArray(attrDef)) parsedObj[key] = this._handleArray(params[key], attrDef[0])
-    else if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
-    else parsedObj[key] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
+    let outKey = key
+    if (Array.isArray(attrDef)) {
+      outKey = attrDef[0]['outKey'] || outKey
+      parsedObj[outKey] = this._handleArray(params[key], attrDef[0])
+    } else if (attrDef['parser']) {
+      outKey = attrDef['outKey'] || outKey
+      parsedObj[outKey] = this._handleParser(params[key], attrDef['parser'])
+    } else {
+      outKey = attrDef['outKey'] || outKey
+      parsedObj[outKey] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
+    }
 
-    if (typeof parsedObj[key] === 'object' && parsedObj[key]['errCode']) {
-      parsedObj[key]['errParam'] = parsedObj[key]['errParam'] || key
-      this.err = parsedObj[key]
+    if (typeof parsedObj[outKey] === 'object' && parsedObj[outKey]['errCode']) {
+      parsedObj[outKey]['errParam'] = parsedObj[outKey]['errParam'] || key
+      this.err = parsedObj[outKey]
       break
     }
   }
@@ -104,10 +114,11 @@ function parseParams (params) {
 }
 
 async function _asyncvalidateAndParse (val, validatorArr, setterArr) {
-  let validated = await this.validator.asyncExec(val, validatorArr)
-  if (!validated) {
+  let validationRes = await this.validator.asyncExec(val, validatorArr)
+  if (!validationRes.isValid) {
     let err = {
-      errCode: 'INVALID_INPUT'
+      errCode: 'INVALID_INPUT',
+      testKey: validationRes.testKey
     }
     return Promise.reject(err)
   }
@@ -157,7 +168,7 @@ async function _asyncParseParams (params) {
     let attrDef = this._attrDefs[key]
     if (checkStrictNull(params[key])) {
       if (attrDef['optional']) continue
-      if (this.update && params.hasOwnProperty(key)) {
+      if (this.update) {
         delete parsedObj[key]
         continue
       }
@@ -168,19 +179,29 @@ async function _asyncParseParams (params) {
       this.err = Promise.reject(parsedObj[key])
       return this.err
     }
+    let outKey = key
     try {
-      if (Array.isArray(attrDef)) parsedObj[key] = await this._asyncHandleArray(params[key], attrDef[0])
-      else if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
-      else parsedObj[key] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
+      if (Array.isArray(attrDef)) {
+        outKey = attrDef[0]['outKey'] || outKey
+        parsedObj[outKey] = await this._asyncHandleArray(params[key], attrDef[0])
+      } else if (attrDef['parser']) {
+        outKey = attrDef['outKey'] || outKey
+        parsedObj[outKey] = await this._asyncHandleParser(params[key], attrDef['parser'])
+      } else {
+        outKey = attrDef['outKey'] || outKey
+        parsedObj[outKey] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
+      }
     } catch (e) {
       if (typeof e === 'object' && e['errCode']) {
-        parsedObj[key]['errParam'] = e['errParam'] || key
-        parsedObj[key]['errCode'] = e['errCode']
+        parsedObj[outKey]['errParam'] = e['errParam'] || key
+        parsedObj[outKey]['errCode'] = e['errCode']
+        parsedObj[outKey]['testKey'] = e['testKey']
       } else {
-        parsedObj[key]['errParam'] = key
-        parsedObj[key]['errCode'] = e
+        parsedObj[outKey]['errParam'] = key
+        parsedObj[outKey]['errCode'] = e
+        parsedObj[outKey]['testKey'] = 'RUNTIME_ERROR'
       }
-      this.err = Promise.reject(parsedObj[key])
+      this.err = Promise.reject(parsedObj[outKey])
       return this.err
     }
   }

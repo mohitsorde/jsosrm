@@ -117,11 +117,6 @@ function wholeNumber (val) {
   return /^[0-9]+$/.test(val)
 }
 
-let innerMap = {
-  'true': 1,
-  'false': 0
-}
-
 let maxCountList = [
   2,
   3,
@@ -277,15 +272,20 @@ ValidatorBaseClass.prototype.constructor = ValidatorBaseClass
  */
 async function asyncValidate (value, arrayOfUtilKeys) {
   arrayOfUtilKeys = arrayOfUtilKeys || []
-  let isValid
+  let isValid = true
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
     isValid = await this.innerMap[validatorKey]['impl'].call(this, value)
     if (!isValid) {
-      return false
+      return {
+        isValid,
+        testKey: validatorKey
+      }
     }
   }
-  return true
+  return {
+    isValid
+  }
 }
 
 /**
@@ -298,10 +298,15 @@ function validate (value, arrayOfUtilKeys) {
   for (let validatorKey of arrayOfUtilKeys) {
     this.isValidUtilKey(validatorKey)
     if (!this.innerMap[validatorKey]['impl'].call(this, value)) {
-      return false
+      return {
+        isValid: false,
+        testKey: validatorKey
+      }
     }
   }
-  return true
+  return {
+    isValid: true
+  }
 }
 
 ValidatorBaseClass.prototype = Object.assign(ValidatorBaseClass.prototype, {
