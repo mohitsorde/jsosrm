@@ -41,16 +41,21 @@ function _handleParser (paramObj, GenericParserClassArg) {
   if (Array.isArray(GenericParserClassArg)) {
     GenericParserClassArg = GenericParserClassArg[0]
     let parsedArr = []
+    let inputWasArr = true
     if (!Array.isArray(paramObj)) {
+      inputWasArr = false
       paramObj = [paramObj]
     }
+    let ind = 0
     for (let elem of paramObj) {
       let parsedObj = (new GenericParserClassArg(elem, null, false, this.update)).getParams()
       if (typeof parsedObj === 'object' && parsedObj['errCode']) {
         parsedArr = parsedObj
+        if (inputWasArr) parsedArr['errParam'] = JSON.stringify(ind)
         break
       }
       parsedArr.push(parsedObj)
+      ind = ind + 1
     }
     return parsedArr
   }
@@ -59,14 +64,21 @@ function _handleParser (paramObj, GenericParserClassArg) {
 
 function _handleArray (paramArr, attrDef) {
   let parsedArr = []
-  if (!Array.isArray(paramArr)) paramArr = [paramArr]
+  let inputWasArr = true
+  if (!Array.isArray(paramArr)) {
+    inputWasArr = false
+    paramArr = [paramArr]
+  }
+  let ind = 0
   for (let elem of paramArr) {
     let parsedObj = this._validateAndParse(elem, attrDef['validators'], attrDef['setters'])
     if (typeof parsedObj === 'object' && parsedObj['errCode']) {
       parsedArr = parsedObj
+      if (inputWasArr) parsedArr['errParam'] = JSON.stringify(ind)
       break
     }
     parsedArr.push(parsedObj)
+    ind = ind + 1
   }
   return parsedArr
 }
@@ -104,7 +116,8 @@ function parseParams (params) {
     }
 
     if (typeof parsedObj[outKey] === 'object' && parsedObj[outKey]['errCode']) {
-      parsedObj[outKey]['errParam'] = parsedObj[outKey]['errParam'] || key
+      if (parsedObj[outKey]['errParam']) parsedObj[outKey]['errParam'] = key + '.' + parsedObj[outKey]['errParam']
+      else parsedObj[outKey]['errParam'] = key
       this.err = parsedObj[outKey]
       break
     }
