@@ -36,7 +36,7 @@ describe('parse input object as per schema defined =>', () => {
     it('only setter =>', () => {
       let setterArr = ['toLower']
       let attrDef = attrDefgen(null, setterArr)
-      let parsedObj = new ParserBaseClass(inputObj, attrDef)
+      let parsedObj = new ParserBaseClass(inputObj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[attrName], setter.exec(inputObj[attrName], setterArr))
@@ -46,7 +46,7 @@ describe('parse input object as per schema defined =>', () => {
       let setterArr = ['toLower']
       let validatorArr = ['aplhabetical']
       let attrDef = attrDefgen(validatorArr, setterArr)
-      let parsedObj = new ParserBaseClass(inputObj, attrDef)
+      let parsedObj = new ParserBaseClass(inputObj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[attrName], setter.exec(inputObj[attrName], setterArr))
@@ -57,7 +57,7 @@ describe('parse input object as per schema defined =>', () => {
       let validatorArr = ['aplhabetical']
       let outerAttr = 'outerAttr'
 
-      function SubClass (params, attrDefs) {
+      function SubClass (params, update, asyncHandle, attrDefs) {
         ParserBaseClass.apply(this, arguments)
       }
 
@@ -68,7 +68,7 @@ describe('parse input object as per schema defined =>', () => {
         [outerAttr]: inputObj
       }
       let attrDef = attrDefgen(null, null, SubClass, outerAttr)
-      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
@@ -79,7 +79,7 @@ describe('parse input object as per schema defined =>', () => {
       let validatorArr = ['customValidator']
       let outerAttr = 'outerAttr'
 
-      function SubClass (params, attrDefs) {
+      function SubClass (params, update, asyncHandle, attrDefs) {
         ParserBaseClass.apply(this, arguments)
       }
 
@@ -108,7 +108,7 @@ describe('parse input object as per schema defined =>', () => {
         })
       }
       let attrDef = attrDefgen(null, null, SubClass, outerAttr)
-      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
@@ -120,7 +120,7 @@ describe('parse input object as per schema defined =>', () => {
     let validatorArr = ['aplhabetical']
     let outerAttr = 'outerAttr'
 
-    function SubClass (params, attrDefs) {
+    function SubClass (params, update, asyncHandle, attrDefs) {
       ParserBaseClass.apply(this, arguments)
     }
     SubClass.prototype = Object.create(ParserBaseClass.prototype)
@@ -133,7 +133,7 @@ describe('parse input object as per schema defined =>', () => {
       let obj = {
         [outerAttr]: inputObj
       }
-      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][0][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
@@ -143,7 +143,7 @@ describe('parse input object as per schema defined =>', () => {
       let obj = {
         [outerAttr]: [inputObj]
       }
-      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][0][attrName], setter.exec(obj[outerAttr][0][attrName], setterArr))
@@ -157,7 +157,7 @@ describe('parse input object as per schema defined =>', () => {
       let attrDef = attrDefgen(validatorArr, setterArr)
       let parsedObj = new ParserBaseClass(Object.assign({}, inputObj, {
         [attrName]: '12213'
-      }), attrDef)
+      }), false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.exists(outputObj, 'errCode', 'expected error found')
       assert.strictEqual(outputObj.errParam, attrName)
@@ -171,7 +171,7 @@ describe('parse input object as per schema defined =>', () => {
       let getterArr = ['asLower', 'appendAsterisk']
       let outerAttr = 'outerAttr'
 
-      function SubClass (params, attrDefs) {
+      function SubClass (params, update, asyncHandle, attrDefs) {
         ParserBaseClass.apply(this, arguments)
       }
 
@@ -209,7 +209,7 @@ describe('parse input object as per schema defined =>', () => {
         })
       }
       let attrDef = attrDefgen(null, null, SubClass, outerAttr)
-      let parsedObj = new ParserBaseClass(obj, attrDef)
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
@@ -223,7 +223,7 @@ describe('parse input object as per schema defined =>', () => {
       let getterArr = ['asLower', 'appendAsterisk']
       let outerAttr = 'outerAttr'
 
-      function SubClass (params, attrDefs) {
+      function SubClass (params, update, asyncHandle, attrDefs) {
         ParserBaseClass.apply(this, arguments)
       }
 
@@ -267,7 +267,7 @@ describe('parse input object as per schema defined =>', () => {
         })
       }
       let attrDef = attrDefgen(null, null, SubClass, outerAttr)
-      let parsedObj = new ParserBaseClass(obj, attrDef, true)
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
       return parsedObj.getParams().then((outputObj) => {
         assert.notExists(outputObj.errCode, 'no error found')
         assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')

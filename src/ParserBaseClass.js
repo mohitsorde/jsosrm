@@ -18,7 +18,7 @@ const checkStrictNull = (val) => {
   return !val
 }
 
-function ParserBaseClass (params, attrDefs, asyncHandle, update) {
+function ParserBaseClass (params, update, asyncHandle, attrDefs) {
   this.update = update
   this.asyncHandle = asyncHandle
   if (attrDefs) this.attrDefs = attrDefs
@@ -48,7 +48,7 @@ function _handleParser (paramObj, GenericParserClassArg) {
     }
     let ind = 0
     for (let elem of paramObj) {
-      let parsedObj = (new GenericParserClassArg(elem, null, false, this.update)).getParams()
+      let parsedObj = (new GenericParserClassArg(elem, this.update)).getParams()
       if (typeof parsedObj === 'object' && parsedObj['errCode']) {
         parsedArr = parsedObj
         if (inputWasArr) parsedArr['errParam'] = JSON.stringify(ind)
@@ -59,7 +59,7 @@ function _handleParser (paramObj, GenericParserClassArg) {
     }
     return parsedArr
   }
-  return (new GenericParserClassArg(paramObj, null, false, this.update)).getParams()
+  return (new GenericParserClassArg(paramObj, this.update)).getParams()
 }
 
 function _handleArray (paramArr, attrDef) {
@@ -152,7 +152,7 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
     for (let elem of paramObj) {
       let parsedObj
       try {
-        parsedObj = await (new GenericParserClassArg(elem, null, true, this.update)).getParams()
+        parsedObj = await (new GenericParserClassArg(elem, this.update, true)).getParams()
       } catch (e) {
         if (typeof e === 'object' && e['errCode'] && inputWasArr) e['errParam'] = JSON.stringify(ind)
         return Promise.reject(e)
@@ -162,7 +162,7 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
     }
     return parsedArr
   }
-  return (new GenericParserClassArg(paramObj, null, true, this.update)).getParams()
+  return (new GenericParserClassArg(paramObj, this.update, true)).getParams()
 }
 
 async function _asyncHandleArray (paramArr, attrDef) {
