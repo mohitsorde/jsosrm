@@ -37,54 +37,6 @@ describe('validators => ', () => {
     })
   })
 
-  describe('dateOfBirth', () => {
-    before(() => {
-      currValidationList.push('dateOfBirth')
-    })
-
-    after(() => {
-      currValidationList.length = 0
-    })
-
-    it('returned value is true if the input conforms to the pattern January 09, 2009', () => {
-      inputArr.push('J 9, 0000', 'January 32, 1111')
-      inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidationList).isValid, true, 'failed for input => ' + elem)
-      })
-    })
-
-    it('returned value is false if input deviates from the pattern January 09, 2009', () => {
-      inputArr.push('00/00/0000', 'Jan 0p, 8888', '99 99, 9999', '9')
-      inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidationList).isValid, false, 'failed for input => ' + elem)
-      })
-    })
-  })
-
-  describe('cardExpiry', () => {
-    before(() => {
-      currValidationList.push('cardExpiry')
-    })
-
-    after(() => {
-      currValidationList.length = 0
-    })
-
-    it('returned value is true if the input conforms to the pattern 09/2001', () => {
-      inputArr.push('0/0000', '77/7777')
-      inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidationList).isValid, true, 'failed for input => ' + elem)
-      })
-    })
-
-    it('returned value is false if input deviates from the pattern 09/2001', () => {
-      inputArr.push('/0000', 'xx/xxxx', '99 99, 9999', 99)
-      inputArr.forEach((elem) => {
-        assert.strictEqual(validator.exec(elem, currValidationList).isValid, false, 'failed for input => ' + elem)
-      })
-    })
-  })
-
   describe('alphaNumeric', () => {
     before(() => {
       currValidationList.push('alphaNumeric')

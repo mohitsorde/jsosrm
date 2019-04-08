@@ -15,22 +15,6 @@ function aplhabetical (val) {
 }
 
 /**
- * validates string provided conforms to the pattern January 09, 2009
- * @param {string} val
- */
-function dateOfBirth (val) {
-  return /^[A-Za-z]+\s[0-9]{1,2},\s[0-9]{4}$/.test(val)
-}
-
-/**
- * validates string provided conforms to the pattern 09/2001
- * @param {string} val
- */
-function cardExpiry (val) {
-  return /^[0-9]{1,2}\/[0-9]{4}$/.test(val)
-}
-
-/**
  * validates string provided contains only aplhanumeric characters
  * @param {string} val
  */
@@ -192,14 +176,6 @@ function ValidatorBaseClass () {
     'aplhabetical': {
       desc: 'validates string provided contains only alphabetical characters',
       impl: aplhabetical
-    },
-    'dateOfBirth': {
-      desc: 'validates string provided conforms to the pattern January 09, 2009',
-      impl: dateOfBirth
-    },
-    'cardExpiry': {
-      desc: 'validates string provided conforms to the pattern 09/2001',
-      impl: cardExpiry
     },
     'alphaNumeric': {
       desc: 'validates string provided contains only aplhanumeric characters',
