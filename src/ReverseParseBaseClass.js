@@ -29,7 +29,7 @@ function _handleParser (paramObj, ParserClassArg) {
   return (new ParserClassArg()).getReverseParams(paramObj)
 }
 
-function parseParams (params) {
+function _parseParams (params) {
   if (this.asyncHandle) { return this._asyncParseParams(params) }
   let parsedObj = {}
   for (let key in params) {
@@ -91,7 +91,7 @@ async function _asyncParseParams (params) {
 ReverseParserBaseClass.prototype = Object.create(GenericParserClass.prototype)
 ReverseParserBaseClass.prototype = Object.assign(ReverseParserBaseClass.prototype, {
   constructor: ReverseParserBaseClass,
-  parseParams,
+  _parseParams,
   _handleParser,
   _asyncParseParams,
   _asyncHandleParser,

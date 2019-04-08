@@ -6,7 +6,7 @@
 
 function GenericParserClass (params) {
   this.err = null
-  this.params = this.parseParams(params || {})
+  this.params = this._parseParams(params || {})
 }
 
 function getErr () {
@@ -17,14 +17,14 @@ function getParams () {
   return this.getErr() || this.params
 }
 
-function parseParams (params) {
+function _parseParams (params) {
   return params
 }
 
 GenericParserClass.prototype = {
   constructor: GenericParserClass,
   getErr,
-  parseParams,
+  _parseParams,
   getParams
 }
 

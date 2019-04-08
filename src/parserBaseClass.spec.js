@@ -29,6 +29,8 @@ let inputObj = {
   [ attrName ]: attrVal
 }
 
+// To Test - update, asyncHandle, deep validation key in object and in array, outKey, in README.md inheritance by extension
+
 describe('parse input object as per schema defined =>', () => {
   describe('parser passes =>', () => {
     it('only setter =>', () => {

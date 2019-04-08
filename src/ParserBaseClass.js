@@ -83,7 +83,7 @@ function _handleArray (paramArr, attrDef) {
   return parsedArr
 }
 
-function parseParams (params) {
+function _parseParams (params) {
   if (this.asyncHandle) {
     return this._asyncParseParams(params)
   }
@@ -276,7 +276,7 @@ ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
   _asyncReverseParams,
   _handleArray,
   _asyncHandleArray,
-  parseParams,
+  _parseParams,
   validator: new ValidatorBaseClass(),
   setter: new SetterBaseClass(),
   getter: new GetterBaseClass(),
