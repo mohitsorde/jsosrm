@@ -9,6 +9,6 @@ function UserAddressParser (params) {
 
 UserAddressParser.prototype = Object.create(ParserBaseClass.prototype)
 UserAddressParser.prototype.constructor = UserAddressParser
-UserAddressParser.prototype._attrDefs = userAddressSchema
+UserAddressParser.prototype.attrDefs = userAddressSchema
 
 module.exports = UserAddressParser

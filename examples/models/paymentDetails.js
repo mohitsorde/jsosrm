@@ -10,7 +10,7 @@ function PaymentDetailsParser (params) {
 
 PaymentDetailsParser.prototype = Object.create(ParserBaseClass.prototype)
 PaymentDetailsParser.prototype.constructor = PaymentDetailsParser
-PaymentDetailsParser.prototype._attrDefs = paymentDetailsSchema
+PaymentDetailsParser.prototype.attrDefs = paymentDetailsSchema
 PaymentDetailsParser.prototype.getter = paymentDetailsGetter
 
 module.exports = PaymentDetailsParser

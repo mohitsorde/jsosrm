@@ -63,7 +63,7 @@ describe('parse input object as per schema defined =>', () => {
 
       SubClass.prototype = Object.create(ParserBaseClass.prototype)
       SubClass.prototype.constructor = SubClass
-      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
       let obj = {
         [outerAttr]: inputObj
       }
@@ -85,7 +85,7 @@ describe('parse input object as per schema defined =>', () => {
 
       SubClass.prototype = Object.create(ParserBaseClass.prototype)
       SubClass.prototype.constructor = SubClass
-      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
       SubClass.prototype.validator = new ValidatorBaseClass()
       SubClass.prototype.validator.pushAll([{
         key: 'customValidator',
@@ -125,7 +125,7 @@ describe('parse input object as per schema defined =>', () => {
     }
     SubClass.prototype = Object.create(ParserBaseClass.prototype)
     SubClass.prototype.constructor = SubClass
-    SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
+    SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
 
     let attrDef = attrDefgen(null, null, [SubClass], outerAttr)
 
@@ -177,8 +177,8 @@ describe('parse input object as per schema defined =>', () => {
 
       SubClass.prototype = Object.create(ParserBaseClass.prototype)
       SubClass.prototype.constructor = SubClass
-      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
-      SubClass.prototype._attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
       SubClass.prototype.validator = new ValidatorBaseClass()
       SubClass.prototype.validator.pushAll([{
         key: 'customValidator',
@@ -229,8 +229,8 @@ describe('parse input object as per schema defined =>', () => {
 
       SubClass.prototype = Object.create(ParserBaseClass.prototype)
       SubClass.prototype.constructor = SubClass
-      SubClass.prototype._attrDefs = attrDefgen(validatorArr, setterArr)
-      SubClass.prototype._attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
       SubClass.prototype.validator = new ValidatorBaseClass()
       SubClass.prototype.validator.pushAll([{
         key: 'customValidator',

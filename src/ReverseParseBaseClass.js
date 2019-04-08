@@ -9,7 +9,7 @@ const GetterBaseClass = require('./GetterBaseClass')
 
 function ReverseParserBaseClass (params, attrDefs, getter, asyncHandle) {
   this.asyncHandle = asyncHandle
-  if (attrDefs) this._attrDefs = attrDefs
+  if (attrDefs) this.attrDefs = attrDefs
   if (getter) this.getter = getter
   GenericParserClass.apply(this, arguments)
 }
@@ -33,7 +33,7 @@ function _parseParams (params) {
   if (this.asyncHandle) { return this._asyncParseParams(params) }
   let parsedObj = {}
   for (let key in params) {
-    let attrDef = this._attrDefs[key]
+    let attrDef = this.attrDefs[key]
     if (!attrDef || !params[key]) {
       parsedObj[key] = params[key]
       continue
@@ -68,7 +68,7 @@ async function _asyncHandleParser (paramObj, ParserClassArg) {
 async function _asyncParseParams (params) {
   let parsedObj = {}
   for (let key in params) {
-    let attrDef = this._attrDefs[key]
+    let attrDef = this.attrDefs[key]
     if (!attrDef || !params[key]) {
       parsedObj[key] = params[key]
       continue
@@ -95,7 +95,7 @@ ReverseParserBaseClass.prototype = Object.assign(ReverseParserBaseClass.prototyp
   _handleParser,
   _asyncParseParams,
   _asyncHandleParser,
-  _attrDefs: {},
+  attrDefs: {},
   getter: new GetterBaseClass()
 })
 

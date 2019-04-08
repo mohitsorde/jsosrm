@@ -21,7 +21,7 @@ const checkStrictNull = (val) => {
 function ParserBaseClass (params, attrDefs, asyncHandle, update) {
   this.update = update
   this.asyncHandle = asyncHandle
-  if (attrDefs) this._attrDefs = attrDefs
+  if (attrDefs) this.attrDefs = attrDefs
   GenericParserClass.apply(this, arguments)
 }
 
@@ -88,8 +88,8 @@ function _parseParams (params) {
     return this._asyncParseParams(params)
   }
   let parsedObj = Object.assign({}, params) // = {} to skip attributes not defined in the schema
-  for (let key in this._attrDefs) {
-    let attrDef = this._attrDefs[key]
+  for (let key in this.attrDefs) {
+    let attrDef = this.attrDefs[key]
     if (checkStrictNull(params[key])) {
       if (attrDef['optional']) continue
       if (this.update) {
@@ -189,8 +189,8 @@ async function _asyncHandleArray (paramArr, attrDef) {
 
 async function _asyncParseParams (params) {
   let parsedObj = Object.assign({}, params) // = {} to skip attributes not defined in the schema
-  for (let key in this._attrDefs) {
-    let attrDef = this._attrDefs[key]
+  for (let key in this.attrDefs) {
+    let attrDef = this.attrDefs[key]
     if (checkStrictNull(params[key])) {
       if (attrDef['optional']) continue
       if (this.update) {
@@ -241,10 +241,10 @@ function getReverseParams (params, asyncHandle) {
     if (!this.getErr()) params = this.getParams()
     else return this.getErr()
   } else {
-    return (new ReverseParseBaseClass(params, this._attrDefs, this.getter)).getParams()
+    return (new ReverseParseBaseClass(params, this.attrDefs, this.getter)).getParams()
   }
   if (!this.reverseParams) {
-    this.reverseParams = new ReverseParseBaseClass(params, this._attrDefs, this.getter)
+    this.reverseParams = new ReverseParseBaseClass(params, this.attrDefs, this.getter)
   }
   return this.reverseParams.getParams()
 }
@@ -255,10 +255,10 @@ async function _asyncReverseParams (params) {
     if (!err) params = await this.getParams()
     else return this.getErr()
   } else {
-    return (new ReverseParseBaseClass(params, this._attrDefs, this.getter, true)).getParams()
+    return (new ReverseParseBaseClass(params, this.attrDefs, this.getter, true)).getParams()
   }
   if (!this.reverseParams) {
-    this.reverseParams = new ReverseParseBaseClass(params, this._attrDefs, this.getter, true)
+    this.reverseParams = new ReverseParseBaseClass(params, this.attrDefs, this.getter, true)
   }
   return this.reverseParams.getParams()
 }
@@ -267,7 +267,7 @@ ParserBaseClass.prototype = Object.create(GenericParserClass.prototype)
 
 ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
   constructor: ParserBaseClass,
-  _attrDefs: {},
+  attrDefs: {},
   _validateAndParse,
   _handleParser,
   _asyncParseParams,

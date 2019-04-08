@@ -9,6 +9,6 @@ function UserParser (params) {
 
 UserParser.prototype = Object.create(ParserBaseClass.prototype)
 UserParser.prototype.constructor = UserParser
-UserParser.prototype._attrDefs = userSchema
+UserParser.prototype.attrDefs = userSchema
 
 module.exports = UserParser
