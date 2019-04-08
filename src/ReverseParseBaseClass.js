@@ -22,11 +22,11 @@ function _handleParser (paramObj, ParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      parsedArr.push((new ParserClassArg(null, null, false, true)).getReverseParams(elem))
+      parsedArr.push((new ParserClassArg()).getReverseParams(elem))
     }
     return parsedArr
   }
-  return (new ParserClassArg(null, null, false, true)).getReverseParams(paramObj)
+  return (new ParserClassArg()).getReverseParams(paramObj)
 }
 
 function parseParams (params) {
@@ -57,12 +57,12 @@ async function _asyncHandleParser (paramObj, ParserClassArg) {
       paramObj = [paramObj]
     }
     for (let elem of paramObj) {
-      let revParsedObj = await (new ParserClassArg(null, null, true, true)).getReverseParams(elem, true)
+      let revParsedObj = await (new ParserClassArg()).getReverseParams(elem, true)
       parsedArr.push(revParsedObj)
     }
     return parsedArr
   }
-  return (new ParserClassArg(null, null, true, true)).getReverseParams(paramObj, true)
+  return (new ParserClassArg()).getReverseParams(paramObj, true)
 }
 
 async function _asyncParseParams (params) {

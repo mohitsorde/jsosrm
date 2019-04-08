@@ -49,6 +49,9 @@ console.log('parsed input object => ', JSON.stringify(output))
 
 let reverseParsedObj = parsedUser.getReverseParams()
 console.log('reverse parsed object => ', JSON.stringify(reverseParsedObj))
+
+reverseParsedObj = (new UserParser()).getReverseParams(output)
+console.log('reverse parsed object => ', JSON.stringify(reverseParsedObj))
 /**
  * outputs:
  * {

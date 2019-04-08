@@ -143,17 +143,22 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
   if (Array.isArray(GenericParserClassArg)) {
     GenericParserClassArg = GenericParserClassArg[0]
     let parsedArr = []
+    let inputWasArr = true
     if (!Array.isArray(paramObj)) {
+      inputWasArr = false
       paramObj = [paramObj]
     }
+    let ind = 0
     for (let elem of paramObj) {
       let parsedObj
       try {
         parsedObj = await (new GenericParserClassArg(elem, null, true, this.update)).getParams()
       } catch (e) {
+        if (typeof e === 'object' && e['errCode'] && inputWasArr) e['errParam'] = JSON.stringify(ind)
         return Promise.reject(e)
       }
       parsedArr.push(parsedObj)
+      ind = ind + 1
     }
     return parsedArr
   }
@@ -162,15 +167,22 @@ async function _asyncHandleParser (paramObj, GenericParserClassArg) {
 
 async function _asyncHandleArray (paramArr, attrDef) {
   let parsedArr = []
-  if (!Array.isArray(paramArr)) paramArr = [paramArr]
+  let inputWasArr = true
+  if (!Array.isArray(paramArr)) {
+    inputWasArr = false
+    paramArr = [paramArr]
+  }
+  let ind = 0
   for (let elem of paramArr) {
     let parsedObj
     try {
       parsedObj = await this._asyncvalidateAndParse(elem, attrDef['validators'], attrDef['setters'])
     } catch (e) {
+      if (typeof e === 'object' && e['errCode'] && inputWasArr) e['errParam'] = JSON.stringify(ind)
       return Promise.reject(e)
     }
     parsedArr.push(parsedObj)
+    ind = ind + 1
   }
   return parsedArr
 }
@@ -206,7 +218,8 @@ async function _asyncParseParams (params) {
       }
     } catch (e) {
       if (typeof e === 'object' && e['errCode']) {
-        parsedObj[outKey]['errParam'] = e['errParam'] || key
+        if (e['errParam']) parsedObj[outKey]['errParam'] = key + '.' + e['errParam']
+        else parsedObj[outKey]['errParam'] = key
         parsedObj[outKey]['errCode'] = e['errCode']
         parsedObj[outKey]['testKey'] = e['testKey']
       } else {
