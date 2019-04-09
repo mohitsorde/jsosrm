@@ -258,6 +258,43 @@ describe('parse input object as per schema defined =>', () => {
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][0][attrName], setter.exec(obj[outerAttr][0][attrName], setterArr))
     })
+
+    it('input is array and parser fails', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj,
+          {
+            [attrName]: 123
+          }
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.property(outputObj, 'errCode')
+      assert.property(outputObj, 'errParam')
+      assert.property(outputObj, 'testKey')
+      assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
+      assert.strictEqual(outputObj['testKey'], 'alphabetical')
+    })
+
+    it('input is array and parser fails with async validation', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj,
+          {
+            [attrName]: 123
+          }
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
+      return parsedObj.getParams().catch(outputObj => {
+        assert.property(outputObj, 'errCode')
+        assert.property(outputObj, 'errParam')
+        assert.property(outputObj, 'testKey')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
+        assert.strictEqual(outputObj['testKey'], 'alphabetical')
+      })
+    })
   })
 
   describe('parser fails =>', () => {
