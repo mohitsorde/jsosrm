@@ -13,9 +13,9 @@ describe('validators => ', () => {
     inputArr.length = 0
   })
 
-  describe('aplhabetical', () => {
+  describe('alphabetical', () => {
     before(() => {
-      currValidationList.push('aplhabetical')
+      currValidationList.push('alphabetical')
     })
 
     after(() => {
@@ -365,12 +365,12 @@ describe('validators => ', () => {
   describe('override existing validator', () => {
     let validator = new ValidatorBaseClass()
     validator.pushAll([{
-      'key': 'aplhabetical',
+      'key': 'alphabetical',
       'impl': function (val) { return true },
       'desc': 'always returns true for any input'
     }])
     before(() => {
-      currValidationList.push('aplhabetical', 'maxChar_3')
+      currValidationList.push('alphabetical', 'maxChar_3')
     })
 
     after(() => {

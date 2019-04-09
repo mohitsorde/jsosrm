@@ -222,6 +222,7 @@ async function _asyncParseParams (params) {
       if (outKey !== key) delete parsedObj[key]
     } catch (e) {
       if (typeof e === 'object' && e['errCode']) {
+        parsedObj[outKey] = {}
         if (e['errParam']) parsedObj[outKey]['errParam'] = key + '.' + e['errParam']
         else parsedObj[outKey]['errParam'] = key
         parsedObj[outKey]['errCode'] = e['errCode']

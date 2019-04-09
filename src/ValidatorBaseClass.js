@@ -10,7 +10,7 @@ const GenericUtilityClass = require('./GenericUtilityClass')
  * validates string provided contains only alphabetical characters
  * @param {string} val
  */
-function aplhabetical (val) {
+function alphabetical (val) {
   return typeof val === 'string' && /^[a-zA-Z]+$/.test(val)
 }
 
@@ -31,7 +31,7 @@ function nameOnly (val) {
     return false
   }
   if (val.length === 1) {
-    return this.innerMap['aplhabetical']['impl'](val)
+    return this.innerMap['alphabetical']['impl'](val)
   }
   return /^[a-zA-Z][a-zA-Z. ,]*[a-zA-Z.]$/.test(val)
 }
@@ -173,9 +173,9 @@ function ValidatorBaseClass () {
       desc: 'validates value is of type boolean',
       impl: isBoolean
     },
-    'aplhabetical': {
+    'alphabetical': {
       desc: 'validates string provided contains only alphabetical characters',
-      impl: aplhabetical
+      impl: alphabetical
     },
     'alphaNumeric': {
       desc: 'validates string provided contains only aplhanumeric characters',

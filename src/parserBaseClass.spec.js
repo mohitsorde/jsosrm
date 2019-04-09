@@ -46,7 +46,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('validator and setter =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = attrDefgen(validatorArr, setterArr)
       let parsedObj = new ParserBaseClass(inputObj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
@@ -56,7 +56,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('validator, setter and outKey =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = attrDefgen(validatorArr, setterArr, null, null, false, 'myKey')
       let parsedObj = new ParserBaseClass(inputObj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
@@ -68,7 +68,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('validator, setter and optional =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = Object.assign(
         attrDefgen(validatorArr, setterArr),
         attrDefgen(validatorArr, setterArr, null, 'myKey', true)
@@ -83,7 +83,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('validator, setter and update =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = Object.assign(
         attrDefgen(validatorArr, setterArr),
         attrDefgen(validatorArr, setterArr, null, 'myKey')
@@ -98,7 +98,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('validator, setter, optional and outKey =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = Object.assign(
         attrDefgen(validatorArr, setterArr, null, null, false, 'myKey'),
         attrDefgen(validatorArr, setterArr, null, 'myKey', true)
@@ -112,7 +112,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('parser, validator and setter =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
 
       function SubClass (params, update, asyncHandle, attrDefs) {
@@ -134,7 +134,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('parser, validator, setter, optional and outKey  =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
 
       function SubClass (params, update, asyncHandle, attrDefs) {
@@ -148,19 +148,19 @@ describe('parse input object as per schema defined =>', () => {
         [outerAttr]: inputObj
       }
       let attrDef = Object.assign(
-        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey'),
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey2'),
         attrDefgen(validatorArr, setterArr, null, 'myKey', true)
       )
       let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
-      assert.property(outputObj, 'myKey')
-      assert.strictEqual(outputObj['myKey'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
+      assert.property(outputObj, 'myKey2')
+      assert.strictEqual(outputObj['myKey2'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
     })
 
     it('parser, validator, setter, update and outKey  =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
 
       function SubClass (params, update, asyncHandle, attrDefs) {
@@ -227,7 +227,7 @@ describe('parse input object as per schema defined =>', () => {
 
   describe('parser is array => ', () => {
     let setterArr = ['toLower']
-    let validatorArr = ['aplhabetical']
+    let validatorArr = ['alphabetical']
     let outerAttr = 'outerAttr'
 
     function SubClass (params, update, asyncHandle, attrDefs) {
@@ -263,7 +263,7 @@ describe('parse input object as per schema defined =>', () => {
   describe('parser fails =>', () => {
     it('validator and setter =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let attrDef = attrDefgen(validatorArr, setterArr)
       let parsedObj = new ParserBaseClass(Object.assign({}, inputObj, {
         [attrName]: '12213'
@@ -271,12 +271,12 @@ describe('parse input object as per schema defined =>', () => {
       let outputObj = parsedObj.getParams()
       assert.exists(outputObj, 'errCode', 'expected error found')
       assert.strictEqual(outputObj.errParam, attrName)
-      assert.strictEqual(outputObj.testKey, 'aplhabetical')
+      assert.strictEqual(outputObj.testKey, 'alphabetical')
     })
 
     it('parser, validator and setter =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
 
       function SubClass (params, update, asyncHandle, attrDefs) {
@@ -295,10 +295,211 @@ describe('parse input object as per schema defined =>', () => {
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
     })
+
+    it('parser, validator, setter, optional and outKey  =>', () => {
+      let setterArr = ['toLower']
+      let validatorArr = ['alphabetical']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      let obj = {
+        [outerAttr]: Object.assign({
+          'myKey': inputObj[attrName]
+        }, inputObj, {
+          [attrName]: 12
+        })
+      }
+      let attrDef = Object.assign(
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey2'),
+        attrDefgen(validatorArr, setterArr, null, 'myKey', true)
+      )
+      let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.property(outputObj, 'errCode')
+      assert.property(outputObj, 'errParam')
+      assert.property(outputObj, 'testKey')
+      assert.strictEqual(outputObj['errParam'], outerAttr + '.' + attrName)
+      assert.strictEqual(outputObj.testKey, 'alphabetical')
+    })
+
+    it('parser, validator, setter, update and outKey  =>', () => {
+      let setterArr = ['toLower']
+      let validatorArr = ['alphabetical']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      let obj = {
+        [outerAttr]: Object.assign({
+          'myKey': inputObj[attrName]
+        }, inputObj, {
+          [attrName]: 12
+        })
+      }
+      let attrDef = Object.assign(
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey2'),
+        attrDefgen(validatorArr, setterArr, null, 'myKey')
+      )
+      let parsedObj = new ParserBaseClass(obj, true, false, attrDef)
+      let outputObj = parsedObj.getParams()
+      assert.property(outputObj, 'errCode')
+      assert.property(outputObj, 'errParam')
+      assert.property(outputObj, 'testKey')
+      assert.strictEqual(outputObj['errParam'], outerAttr + '.' + attrName)
+      assert.strictEqual(outputObj.testKey, 'alphabetical')
+    })
+
+    it('parser, custom async validator, custom async setter, optional, explicit outKey and custom async getter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'riseup'
+        }),
+        'myKey2': 'riseup'
+      }
+      let attrDef = Object.assign(
+        attrDefgen(['alphabetical'], ['toUpper'], null, 'myKey2', true, null, ['asLower']),
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey')
+      )
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
+      return parsedObj.getParams().catch((outputObj) => {
+        assert.property(outputObj, 'errCode')
+        assert.property(outputObj, 'errParam')
+        assert.property(outputObj, 'testKey')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.' + attrName)
+        assert.strictEqual(outputObj.testKey, 'customValidator')
+      })
+    })
+
+    it('parser, custom async validator, custom async setter, update, explicit outKey and custom async getter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'riseup'
+        }),
+        'myKey2': 'riseup'
+      }
+      let attrDef = Object.assign(
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey'),
+        attrDefgen(['alphabetical'], ['toUpper'], null, 'myKey2', true, null, ['asLower'])
+      )
+
+      function BaseClass (params, update, asyncHandle) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      BaseClass.prototype = Object.create(ParserBaseClass.prototype)
+      BaseClass.prototype.constructor = BaseClass
+      BaseClass.prototype.attrDefs = attrDef
+
+      let parsedObj = new BaseClass(obj, true, true)
+      return parsedObj.getParams().catch((outputObj) => {
+        assert.property(outputObj, 'errCode')
+        assert.property(outputObj, 'errParam')
+        assert.property(outputObj, 'testKey')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.' + attrName)
+        assert.strictEqual(outputObj.testKey, 'customValidator')
+      })
+    })
   })
 
   describe('reverse the parsed object as per schema defined =>', () => {
-    it('parser, custom validator,custom setter and custom getter =>', function () {
+    it('parser, custom validator, custom setter and custom getter =>', function () {
       let setterArr = ['customSetter', 'toUpper']
       let validatorArr = ['customValidator']
       let getterArr = ['asLower', 'appendAsterisk']
@@ -354,7 +555,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('parser, validator, setter, optional, outKey and getter  =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
       let getterArr = ['asUpper']
 
@@ -384,7 +585,7 @@ describe('parse input object as per schema defined =>', () => {
 
     it('parser, validator, setter, optional, explicit outKey and getter  =>', () => {
       let setterArr = ['toLower']
-      let validatorArr = ['aplhabetical']
+      let validatorArr = ['alphabetical']
       let outerAttr = 'outerAttr'
       let getterArr = ['asUpper']
 
@@ -564,7 +765,7 @@ describe('parse input object as per schema defined =>', () => {
               assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
             })
         })
-      }).catch(e => console.log(e))
+      })
     })
   })
 })
