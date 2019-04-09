@@ -11,11 +11,12 @@ const ReverseParseBaseClass = require('./ReverseParseBaseClass')
 const GetterBaseClass = require('./GetterBaseClass')
 
 const checkStrictNull = (val) => {
-  let typeOfVal = typeof val
-  if (typeOfVal === 'boolean' || typeOfVal === 'number') {
-    return false
-  }
-  return !val
+  // let typeOfVal = typeof val
+  // if (typeOfVal === 'boolean' || typeOfVal === 'number') {
+  //   return false
+  // }
+  // return !val
+  return typeof val === 'undefined'
 }
 
 function ParserBaseClass (params, update, asyncHandle, attrDefs) {
@@ -114,6 +115,8 @@ function _parseParams (params) {
       outKey = attrDef['outKey'] || outKey
       parsedObj[outKey] = this._validateAndParse(params[key], attrDef['validators'], attrDef['setters'])
     }
+
+    if (outKey !== key) delete parsedObj[key]
 
     if (typeof parsedObj[outKey] === 'object' && parsedObj[outKey]['errCode']) {
       if (parsedObj[outKey]['errParam']) parsedObj[outKey]['errParam'] = key + '.' + parsedObj[outKey]['errParam']
@@ -216,6 +219,7 @@ async function _asyncParseParams (params) {
         outKey = attrDef['outKey'] || outKey
         parsedObj[outKey] = await this._asyncvalidateAndParse(params[key], attrDef['validators'], attrDef['setters'])
       }
+      if (outKey !== key) delete parsedObj[key]
     } catch (e) {
       if (typeof e === 'object' && e['errCode']) {
         if (e['errParam']) parsedObj[outKey]['errParam'] = key + '.' + e['errParam']
