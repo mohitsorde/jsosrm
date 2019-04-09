@@ -63,7 +63,7 @@ async function _asyncHandleParser (paramObj, ParserClassArg) {
 
 async function _asyncParseParams (params) {
   let parsedObj = Object.assign({}, params)
-  for (let attrKey in params) {
+  for (let attrKey in this.attrDefs) {
     let attrDef = this.attrDefs[attrKey]
     let key = attrDef['outKey'] || attrKey
     if (!params[key]) continue

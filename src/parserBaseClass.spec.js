@@ -348,6 +348,8 @@ describe('parse input object as per schema defined =>', () => {
       assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
       outputObj = parsedObj.getReverseParams()
       assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName], ['customSetter']), ['asLower']) + '*')
+      outputObj = (new ParserBaseClass(null, false, false, attrDef)).getReverseParams(parsedObj.getParams())
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName], ['customSetter']), ['asLower']) + '*')
     })
 
     it('parser, validator, setter, optional, outKey and getter  =>', () => {
@@ -376,6 +378,8 @@ describe('parse input object as per schema defined =>', () => {
       assert.strictEqual(outputObj['myKey'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
       outputObj = parsedObj.getReverseParams()
       assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      outputObj = (new ParserBaseClass(null, false, false, attrDef)).getReverseParams(parsedObj.getParams())
+      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
     })
 
     it('parser, validator, setter, optional, explicit outKey and getter  =>', () => {
@@ -395,18 +399,24 @@ describe('parse input object as per schema defined =>', () => {
         [outerAttr]: inputObj
       }
       let attrDef = Object.assign(
-        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey')
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey'),
+        attrDefgen(validatorArr, setterArr, null, 'myKey2', true, null, getterArr)
       )
       let parsedObj = new ParserBaseClass(obj, false, false, attrDef)
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
+      assert.notProperty(outputObj, 'myKey2')
       assert.property(outputObj, 'myKey')
       assert.strictEqual(outputObj['myKey'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
       outputObj = parsedObj.getReverseParams()
+      assert.notProperty(outputObj, 'myKey2')
+      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      outputObj = (new ParserBaseClass(null, false, false, attrDef)).getReverseParams(parsedObj.getParams())
+      assert.notProperty(outputObj, 'myKey2')
       assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
     })
 
-    it('parser, custom async validator,custom async setter, custom async getter =>', () => {
+    it('parser, custom async validator, custom async setter, optional, explicit outKey and custom async getter =>', () => {
       let setterArr = ['customSetter', 'toUpper']
       let validatorArr = ['customValidator']
       let getterArr = ['asLower', 'appendAsterisk']
@@ -455,15 +465,106 @@ describe('parse input object as per schema defined =>', () => {
           [attrName]: 'rise*up'
         })
       }
-      let attrDef = attrDefgen(null, null, SubClass, outerAttr)
+      let attrDef = Object.assign(
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey'),
+        attrDefgen(validatorArr, setterArr, null, 'myKey2', true, null, getterArr)
+      )
       let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
       return parsedObj.getParams().then((outputObj) => {
         assert.notExists(outputObj.errCode, 'no error found')
-        assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
-        return parsedObj.getReverseParams().then((outputObj) => {
-          assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+        assert.notProperty(outputObj, 'myKey2')
+        assert.property(outputObj, 'myKey')
+        assert.strictEqual(outputObj['myKey'][attrName], 'RISEUP')
+        return parsedObj.getReverseParams().then((outputObj2) => {
+          assert.notProperty(outputObj2, 'myKey2')
+          assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+          return (new ParserBaseClass(null, false, true, attrDef)).getReverseParams(outputObj, true)
+            .then((outputObj2) => {
+              assert.notProperty(outputObj2, 'myKey2')
+              assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+            })
         })
       })
+    })
+
+    it('parser, custom async validator, custom async setter, update, explicit outKey and custom async getter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'rise*up'
+        })
+      }
+      let attrDef = Object.assign(
+        attrDefgen(null, null, SubClass, outerAttr, false, 'myKey'),
+        attrDefgen(validatorArr, setterArr, null, 'myKey2', true, null, getterArr)
+      )
+
+      function BaseClass (params, update, asyncHandle) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      BaseClass.prototype = Object.create(ParserBaseClass.prototype)
+      BaseClass.prototype.constructor = BaseClass
+      BaseClass.prototype.attrDefs = attrDef
+
+      let parsedObj = new BaseClass(obj, true, true)
+      return parsedObj.getParams().then((outputObj) => {
+        assert.notExists(outputObj.errCode, 'no error found')
+        assert.notProperty(outputObj, 'myKey2')
+        assert.property(outputObj, 'myKey')
+        assert.strictEqual(outputObj['myKey'][attrName], 'RISEUP')
+        return parsedObj.getReverseParams().then((outputObj2) => {
+          assert.notProperty(outputObj2, 'myKey2')
+          assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+          return (new BaseClass(null)).getReverseParams(outputObj, true)
+            .then((outputObj2) => {
+              assert.notProperty(outputObj2, 'myKey2')
+              assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+            })
+        })
+      }).catch(e => console.log(e))
     })
   })
 })
