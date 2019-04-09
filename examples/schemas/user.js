@@ -42,7 +42,7 @@ module.exports = {
     'optional': true
   },
   'hobbies': [{
-    'validators': ['aplhabetical'],
+    'validators': ['alphabetical'],
     'setters': ['toUpper'],
     'getters': ['asLower']
   }],

@@ -53,7 +53,7 @@ module.exports = {
     'validators': [
       'maxChar_2',
       'minChar_2',
-      'aplhabetical'
+      'alphabetical'
     ],
     'setters': [
       'toUpper'
