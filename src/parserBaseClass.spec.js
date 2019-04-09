@@ -229,6 +229,7 @@ describe('parse input object as per schema defined =>', () => {
     let setterArr = ['toLower']
     let validatorArr = ['alphabetical']
     let outerAttr = 'outerAttr'
+    let getterArr = ['asUpper']
 
     function SubClass (params, update, asyncHandle, attrDefs) {
       ParserBaseClass.apply(this, arguments)
@@ -294,6 +295,83 @@ describe('parse input object as per schema defined =>', () => {
         assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
         assert.strictEqual(outputObj['testKey'], 'alphabetical')
       })
+    })
+
+    it('input is array of atomic values and parser fails', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj[attrName],
+          123
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, false, {
+        [outerAttr]: [attrDefgen(validatorArr, setterArr)[attrName]]
+      })
+      let outputObj = parsedObj.getParams()
+      assert.property(outputObj, 'errCode')
+      assert.property(outputObj, 'errParam')
+      assert.property(outputObj, 'testKey')
+      assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
+      assert.strictEqual(outputObj['testKey'], 'alphabetical')
+    })
+
+    it('input is array of atomic values and parser fails with async', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj[attrName],
+          123
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, {
+        [outerAttr]: [attrDefgen(validatorArr, setterArr)[attrName]]
+      })
+      return parsedObj.getParams().catch(outputObj => {
+        assert.property(outputObj, 'errCode')
+        assert.property(outputObj, 'errParam')
+        assert.property(outputObj, 'testKey')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
+        assert.strictEqual(outputObj['testKey'], 'alphabetical')
+      })
+    })
+
+    it('input is array of atomic values and parser passes', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj[attrName],
+          'sdfsdf'
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, false, {
+        [outerAttr]: [attrDefgen(validatorArr, setterArr, null, null, null, null, getterArr)[attrName]]
+      })
+      let outputObj = parsedObj.getParams()
+      assert.notProperty(outputObj, 'errCode')
+      assert.property(outputObj, outerAttr)
+      assert.isArray(outputObj[outerAttr])
+      assert.notStrictEqual(outputObj[outerAttr].length, 0)
+      assert.strictEqual(outputObj[outerAttr][0], setter.exec(obj[outerAttr][0], setterArr))
+      outputObj = parsedObj.getReverseParams()
+      assert.strictEqual(outputObj[outerAttr][0], getter.exec(obj[outerAttr][0], getterArr))
+    })
+
+    it('input is array of atomic values and parser passes with async', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj[attrName],
+          'sdfsdf'
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, {
+        [outerAttr]: [attrDefgen(validatorArr, setterArr, null, null, null, null, getterArr)[attrName]]
+      })
+      return parsedObj.getParams().then(outputObj => {
+        assert.notProperty(outputObj, 'errCode')
+        assert.property(outputObj, outerAttr)
+        assert.isArray(outputObj[outerAttr])
+        assert.notStrictEqual(outputObj[outerAttr].length, 0)
+        assert.strictEqual(outputObj[outerAttr][0], setter.exec(obj[outerAttr][0], setterArr))
+        return parsedObj.getReverseParams()
+      }).then(outputObj => assert.strictEqual(outputObj[outerAttr][0], getter.exec(obj[outerAttr][0], getterArr)))
     })
   })
 

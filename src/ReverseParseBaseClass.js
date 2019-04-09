@@ -68,10 +68,11 @@ async function _asyncParseParams (params) {
     let key = attrDef['outKey'] || attrKey
     if (!params[key]) continue
     if (Array.isArray(attrDef) && Array.isArray(params[key])) {
-      parsedObj[key] = params[key].map(async (elem) => {
+      parsedObj[key] = []
+      for (let elem of params[key]) {
         let val = await this.getter.asyncExec(elem, attrDef[0]['getters'])
-        return val
-      })
+        parsedObj[key].push(val)
+      }
     } else if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
     else if (!attrDef['getters']) continue
     else parsedObj[key] = await this.getter.asyncExec(params[key], attrDef['getters'])
