@@ -38,50 +38,56 @@ function _validateAndParse (val, validatorArr, setterArr) {
   return this.setter.exec(val, setterArr)
 }
 
+function _handleDeepArray (inputArr, cb) {
+  let outputArr = []
+  let ind = 0
+  for (let elem of inputArr) {
+    if (!Array.isArray(elem)) {
+      let parsedObj = cb(elem)
+      if (typeof parsedObj === 'object' && parsedObj['errCode']) {
+        parsedObj['errParam'] = JSON.stringify(ind) + ((parsedObj['errParam'] && ('.' + parsedObj['errParam'])) || '')
+        outputArr = parsedObj
+        break
+      }
+      outputArr.push(parsedObj)
+    } else if (!elem.length) {
+      outputArr.push([])
+    } else {
+      let parsedObj = this._handleDeepArray(elem, cb)
+      if (typeof parsedObj === 'object' && parsedObj['errCode']) {
+        parsedObj['errParam'] = JSON.stringify(ind) + ((parsedObj['errParam'] && ('.' + parsedObj['errParam'])) || '')
+        outputArr = parsedObj
+        break
+      }
+      outputArr.push(parsedObj)
+    }
+    ind = ind + 1
+  }
+  return outputArr
+}
+
 function _handleParser (paramObj, GenericParserClassArg) {
   if (Array.isArray(GenericParserClassArg)) {
     GenericParserClassArg = GenericParserClassArg[0]
-    let parsedArr = []
-    let inputWasArr = true
     if (!Array.isArray(paramObj)) {
-      inputWasArr = false
-      paramObj = [paramObj]
+      let parsedObj = (new GenericParserClassArg(paramObj, this.update)).getParams()
+      if (typeof parsedObj === 'object' && parsedObj['errCode']) return parsedObj
+      return [parsedObj]
     }
-    let ind = 0
-    for (let elem of paramObj) {
-      let parsedObj = (new GenericParserClassArg(elem, this.update)).getParams()
-      if (typeof parsedObj === 'object' && parsedObj['errCode']) {
-        parsedArr = parsedObj
-        if (inputWasArr) parsedArr['errParam'] = JSON.stringify(ind)
-        break
-      }
-      parsedArr.push(parsedObj)
-      ind = ind + 1
-    }
-    return parsedArr
+    let cb = (elem) => (new GenericParserClassArg(elem, this.update)).getParams()
+    return this._handleDeepArray(paramObj, cb)
   }
   return (new GenericParserClassArg(paramObj, this.update)).getParams()
 }
 
 function _handleArray (paramArr, attrDef) {
-  let parsedArr = []
-  let inputWasArr = true
   if (!Array.isArray(paramArr)) {
-    inputWasArr = false
-    paramArr = [paramArr]
+    let parsedObj = this._validateAndParse(paramArr, attrDef['validators'], attrDef['setters'])
+    if (typeof parsedObj === 'object' && parsedObj['errCode']) return parsedObj
+    return [parsedObj]
   }
-  let ind = 0
-  for (let elem of paramArr) {
-    let parsedObj = this._validateAndParse(elem, attrDef['validators'], attrDef['setters'])
-    if (typeof parsedObj === 'object' && parsedObj['errCode']) {
-      parsedArr = parsedObj
-      if (inputWasArr) parsedArr['errParam'] = JSON.stringify(ind)
-      break
-    }
-    parsedArr.push(parsedObj)
-    ind = ind + 1
-  }
-  return parsedArr
+  let cb = (elem) => this._validateAndParse(elem, attrDef['validators'], attrDef['setters'])
+  return this._handleDeepArray(paramArr, cb)
 }
 
 function _parseParams (params) {
@@ -282,6 +288,7 @@ ParserBaseClass.prototype = Object.assign(ParserBaseClass.prototype, {
   _handleArray,
   _asyncHandleArray,
   _parseParams,
+  _handleDeepArray,
   validator: new ValidatorBaseClass(),
   setter: new SetterBaseClass(),
   getter: new GetterBaseClass(),
