@@ -285,6 +285,36 @@ describe('parse input object as per schema defined =>', () => {
       assert.lengthOf(outputObj[outerAttr][2], 0)
       assert.isArray(outputObj[outerAttr][3])
       assert.strictEqual(outputObj[outerAttr][3][0][0][0][attrName], expectedVal)
+      assert.notStrictEqual(obj[outerAttr][0][attrName], outputObj[outerAttr][0][attrName])
+    })
+
+    it('input is deep array and passes with async validation', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj,
+          [inputObj],
+          [],
+          [[[
+            inputObj
+          ]]]
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
+      return parsedObj.getParams().then(outputObj => {
+        assert.notExists(outputObj.errCode, 'no error found')
+        let expectedVal = setter.exec(inputObj[attrName], setterArr)
+        assert.property(outputObj, outerAttr)
+        assert.isArray(outputObj[outerAttr])
+        assert.lengthOf(outputObj[outerAttr], 4)
+        assert.strictEqual(outputObj[outerAttr][0][attrName], expectedVal)
+        assert.isArray(outputObj[outerAttr][1])
+        assert.strictEqual(outputObj[outerAttr][1][0][attrName], expectedVal)
+        assert.isArray(outputObj[outerAttr][2])
+        assert.lengthOf(outputObj[outerAttr][2], 0)
+        assert.isArray(outputObj[outerAttr][3])
+        assert.strictEqual(outputObj[outerAttr][3][0][0][0][attrName], expectedVal)
+        assert.notStrictEqual(obj[outerAttr][0][attrName], outputObj[outerAttr][0][attrName])
+      })
     })
 
     it('input is array and parser fails', () => {
@@ -341,7 +371,28 @@ describe('parse input object as per schema defined =>', () => {
         assert.property(outputObj, 'errCode')
         assert.property(outputObj, 'errParam')
         assert.property(outputObj, 'testKey')
-        assert.strictEqual(outputObj['errParam'], outerAttr + '.1')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.1.' + attrName)
+        assert.strictEqual(outputObj['testKey'], 'alphabetical')
+      })
+    })
+
+    it('input is deep array and parser fails with async validation', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj,
+          [inputObj],
+          [],
+          [[[
+            { [attrName]: 1 }
+          ]]]
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
+      return parsedObj.getParams().catch(outputObj => {
+        assert.property(outputObj, 'errCode')
+        assert.property(outputObj, 'errParam')
+        assert.property(outputObj, 'testKey')
+        assert.strictEqual(outputObj['errParam'], outerAttr + '.3.0.0.0.' + attrName)
         assert.strictEqual(outputObj['testKey'], 'alphabetical')
       })
     })
@@ -448,6 +499,34 @@ describe('parse input object as per schema defined =>', () => {
       assert.lengthOf(outputObj[outerAttr][2], 0)
       assert.isArray(outputObj[outerAttr][3])
       assert.strictEqual(outputObj[outerAttr][3][0][0][0], expectedVal)
+    })
+
+    it('input is deep array of atomic values and parser passes with async validation', () => {
+      let obj = {
+        [outerAttr]: [
+          inputObj[attrName],
+          [inputObj[attrName]],
+          [],
+          [[[inputObj[attrName]]]]
+        ]
+      }
+      let parsedObj = new ParserBaseClass(obj, false, true, {
+        [outerAttr]: [attrDefgen(validatorArr, setterArr, null, null, null, null, getterArr)[attrName]]
+      })
+      return parsedObj.getParams().then(outputObj => {
+        assert.notExists(outputObj.errCode, 'no error found')
+        let expectedVal = setter.exec(inputObj[attrName], setterArr)
+        assert.property(outputObj, outerAttr)
+        assert.isArray(outputObj[outerAttr])
+        assert.lengthOf(outputObj[outerAttr], 4)
+        assert.strictEqual(outputObj[outerAttr][0], expectedVal)
+        assert.isArray(outputObj[outerAttr][1])
+        assert.strictEqual(outputObj[outerAttr][1][0], expectedVal)
+        assert.isArray(outputObj[outerAttr][2])
+        assert.lengthOf(outputObj[outerAttr][2], 0)
+        assert.isArray(outputObj[outerAttr][3])
+        assert.strictEqual(outputObj[outerAttr][3][0][0][0], expectedVal)
+      })
     })
 
     it('input is array of atomic values and parser passes with async', () => {
