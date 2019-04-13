@@ -223,6 +223,47 @@ describe('parse input object as per schema defined =>', () => {
       assert.notExists(outputObj.errCode, 'no error found')
       assert.strictEqual(outputObj[outerAttr][attrName], 'RISEUP')
     })
+
+    it('parser, errored async custom validator and custom setter =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          throw new Error({ err: 'err' })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return val.replace(/\*/g, '')
+        }
+      }])
+      let obj = {
+        [outerAttr]: Object.assign({}, inputObj, {
+          [attrName]: 'rise*up'
+        })
+      }
+      let attrDef = attrDefgen(null, null, SubClass, outerAttr)
+      let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
+      return parsedObj.getParams().catch(e => {
+        assert.property(e, 'testKey')
+        assert.strictEqual(e['testKey'], 'RUNTIME_ERROR')
+      })
+    })
   })
 
   describe('parser is array => ', () => {

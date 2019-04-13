@@ -136,7 +136,12 @@ function _parseParams (params) {
 }
 
 async function _asyncvalidateAndParse (val, validatorArr, setterArr) {
-  let validationRes = await this.validator.asyncExec(val, validatorArr)
+  let validationRes
+  try {
+    validationRes = await this.validator.asyncExec(val, validatorArr)
+  } catch (e) {
+    return Promise.reject(e)
+  }
   if (!validationRes.isValid) {
     let err = {
       errCode: 'INVALID_INPUT',
@@ -247,8 +252,8 @@ async function _asyncParseParams (params) {
       }
       if (outKey !== key) delete parsedObj[key]
     } catch (e) {
+      parsedObj[outKey] = {}
       if (typeof e === 'object' && e['errCode']) {
-        parsedObj[outKey] = {}
         if (e['errParam']) parsedObj[outKey]['errParam'] = key + '.' + e['errParam']
         else parsedObj[outKey]['errParam'] = key
         parsedObj[outKey]['errCode'] = e['errCode']
