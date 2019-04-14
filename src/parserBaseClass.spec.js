@@ -525,11 +525,12 @@ describe('parse input object as per schema defined =>', () => {
         ]
       }
       let parsedObj = new ParserBaseClass(obj, false, false, {
-        [outerAttr]: [attrDefgen(validatorArr, setterArr, null, null, null, null, getterArr)[attrName]]
+        [outerAttr]: [attrDefgen(validatorArr, setterArr, null, null, null, 'myKey', getterArr)[attrName]]
       })
       let outputObj = parsedObj.getParams()
       assert.notExists(outputObj.errCode, 'no error found')
       let expectedVal = setter.exec(inputObj[attrName], setterArr)
+      outerAttr = 'myKey'
       assert.property(outputObj, outerAttr)
       assert.isArray(outputObj[outerAttr])
       assert.lengthOf(outputObj[outerAttr], 4)
