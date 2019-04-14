@@ -1098,5 +1098,107 @@ describe('parse input object as per schema defined =>', () => {
         })
       })
     })
+
+    it('parser, custom async validator, custom async setter, explicit outKey and custom async getter with deep array =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      function SubClass (params, update, asyncHandle, attrDefs) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      SubClass.prototype = Object.create(ParserBaseClass.prototype)
+      SubClass.prototype.constructor = SubClass
+      SubClass.prototype.attrDefs = attrDefgen(validatorArr, setterArr)
+      SubClass.prototype.attrDefs[attrName]['getters'] = getterArr
+      SubClass.prototype.validator = new ValidatorBaseClass()
+      SubClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      SubClass.prototype.setter = new SetterBaseClass()
+      SubClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      SubClass.prototype.getter = new GetterBaseClass()
+      SubClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+      let newInputObj = Object.assign({}, inputObj, {
+        [attrName]: 'rise*up'
+      })
+      let obj = {
+        [outerAttr]: [
+          newInputObj,
+          [newInputObj],
+          [],
+          [[[newInputObj]]]
+        ]
+      }
+      let attrDef = Object.assign(
+        attrDefgen(null, null, [SubClass], outerAttr, false, 'myKey')
+      )
+
+      function BaseClass (params, update, asyncHandle) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      BaseClass.prototype = Object.create(ParserBaseClass.prototype)
+      BaseClass.prototype.constructor = BaseClass
+      BaseClass.prototype.attrDefs = attrDef
+
+      let parsedObj = new BaseClass(obj, false, true)
+      let expectedVal = getter.exec(SubClass.prototype.setter.exec(newInputObj[attrName].replace(/\*/g, '')), ['asLower']) + '*'
+      return parsedObj.getParams().then((outputObj2) => {
+        let outerAttr = 'myKey'
+        assert.notExists(outputObj2.errCode, 'no error found')
+        return parsedObj.getReverseParams().then((outputObj) => {
+          assert.property(outputObj, outerAttr)
+          assert.isArray(outputObj[outerAttr])
+          assert.lengthOf(outputObj[outerAttr], 4)
+          assert.strictEqual(outputObj[outerAttr][0][attrName], expectedVal)
+          assert.isArray(outputObj[outerAttr][1])
+          assert.strictEqual(outputObj[outerAttr][1][0][attrName], expectedVal)
+          assert.isArray(outputObj[outerAttr][2])
+          assert.lengthOf(outputObj[outerAttr][2], 0)
+          assert.isArray(outputObj[outerAttr][3])
+          assert.strictEqual(outputObj[outerAttr][3][0][0][0][attrName], expectedVal)
+          assert.notStrictEqual(obj[Object.keys(obj)[0]][0][attrName], outputObj[outerAttr][0][attrName])
+          return (new BaseClass(null)).getReverseParams(outputObj2, true)
+            .then((outputObj) => {
+              assert.property(outputObj, outerAttr)
+              assert.isArray(outputObj[outerAttr])
+              assert.lengthOf(outputObj[outerAttr], 4)
+              assert.strictEqual(outputObj[outerAttr][0][attrName], expectedVal)
+              assert.isArray(outputObj[outerAttr][1])
+              assert.strictEqual(outputObj[outerAttr][1][0][attrName], expectedVal)
+              assert.isArray(outputObj[outerAttr][2])
+              assert.lengthOf(outputObj[outerAttr][2], 0)
+              assert.isArray(outputObj[outerAttr][3])
+              assert.strictEqual(outputObj[outerAttr][3][0][0][0][attrName], expectedVal)
+              assert.notStrictEqual(obj[Object.keys(obj)[0]][0][attrName], outputObj[outerAttr][0][attrName])
+            })
+        })
+      })
+    })
   })
 })

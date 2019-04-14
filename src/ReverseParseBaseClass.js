@@ -66,7 +66,7 @@ async function _asyncHandleDeepArray (inputArr, cb) {
       outputArr.push(parsedObj)
     } else if (!elem.length) outputArr.push([])
     else {
-      let parsedObj = await this._handleDeepArray(elem, cb)
+      let parsedObj = await this._asyncHandleDeepArray(elem, cb)
       outputArr.push(parsedObj)
     }
   }
