@@ -910,9 +910,9 @@ describe('parse input object as per schema defined =>', () => {
       assert.property(outputObj, 'myKey')
       assert.strictEqual(outputObj['myKey'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
       outputObj = parsedObj.getReverseParams()
-      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
       outputObj = (new ParserBaseClass(null, false, false, attrDef)).getReverseParams(parsedObj.getParams())
-      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
     })
 
     it('parser, validator, setter, optional, explicit outKey and getter  =>', () => {
@@ -943,10 +943,10 @@ describe('parse input object as per schema defined =>', () => {
       assert.strictEqual(outputObj['myKey'][attrName], setter.exec(obj[outerAttr][attrName], setterArr))
       outputObj = parsedObj.getReverseParams()
       assert.notProperty(outputObj, 'myKey2')
-      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
       outputObj = (new ParserBaseClass(null, false, false, attrDef)).getReverseParams(parsedObj.getParams())
       assert.notProperty(outputObj, 'myKey2')
-      assert.strictEqual(outputObj['myKey'][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
+      assert.strictEqual(outputObj[outerAttr][attrName], getter.exec(obj[outerAttr][attrName], ['asUpper']))
     })
 
     it('parser, custom async validator, custom async setter, optional, explicit outKey and custom async getter =>', () => {
@@ -1010,11 +1010,11 @@ describe('parse input object as per schema defined =>', () => {
         assert.strictEqual(outputObj['myKey'][attrName], 'RISEUP')
         return parsedObj.getReverseParams().then((outputObj2) => {
           assert.notProperty(outputObj2, 'myKey2')
-          assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+          assert.strictEqual(outputObj2[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
           return (new ParserBaseClass(null, false, true, attrDef)).getReverseParams(outputObj, true)
             .then((outputObj2) => {
               assert.notProperty(outputObj2, 'myKey2')
-              assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+              assert.strictEqual(outputObj2[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
             })
         })
       })
@@ -1090,11 +1090,11 @@ describe('parse input object as per schema defined =>', () => {
         assert.strictEqual(outputObj['myKey'][attrName], 'RISEUP')
         return parsedObj.getReverseParams().then((outputObj2) => {
           assert.notProperty(outputObj2, 'myKey2')
-          assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+          assert.strictEqual(outputObj2[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
           return (new BaseClass(null)).getReverseParams(outputObj, true)
             .then((outputObj2) => {
               assert.notProperty(outputObj2, 'myKey2')
-              assert.strictEqual(outputObj2['myKey'][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
+              assert.strictEqual(outputObj2[outerAttr][attrName], getter.exec(SubClass.prototype.setter.exec(obj[outerAttr][attrName].replace(/\*/g, '')), ['asLower']) + '*')
             })
         })
       })
@@ -1170,7 +1170,6 @@ describe('parse input object as per schema defined =>', () => {
       let parsedObj = new BaseClass(obj, false, true)
       let expectedVal = getter.exec(SubClass.prototype.setter.exec(newInputObj[attrName].replace(/\*/g, '')), ['asLower']) + '*'
       return parsedObj.getParams().then((outputObj2) => {
-        let outerAttr = 'myKey'
         assert.notExists(outputObj2.errCode, 'no error found')
         return parsedObj.getReverseParams().then((outputObj) => {
           assert.property(outputObj, outerAttr)
@@ -1269,7 +1268,6 @@ describe('parse input object as per schema defined =>', () => {
       let parsedObj = new BaseClass(obj, false, true)
       let expectedVal = getter.exec(BaseClass.prototype.setter.exec(newInputObj.replace(/\*/g, '')), ['asLower']) + '*'
       return parsedObj.getParams().then((outputObj2) => {
-        let outerAttr = 'myKey'
         assert.notExists(outputObj2.errCode, 'no error found')
         return parsedObj.getReverseParams().then((outputObj) => {
           assert.property(outputObj, outerAttr)
@@ -1366,10 +1364,10 @@ describe('parse input object as per schema defined =>', () => {
       let parsedObj = new BaseClass(obj, false, true)
       let expectedVal = getter.exec(BaseClass.prototype.setter.exec(newInputObj.replace(/\*/g, '')), ['asLower']) + '*'
       return parsedObj.getParams().then((outputObj2) => {
-        let outerAttr = 'myKey'
         assert.notExists(outputObj2.errCode, 'no error found')
         let outputObj = (new BaseClass(null)).getReverseParams(outputObj2)
         assert.property(outputObj, outerAttr)
+        assert.notProperty(outputObj, 'myKey')
         assert.isArray(outputObj[outerAttr])
         assert.lengthOf(outputObj[outerAttr], 4)
         assert.strictEqual(outputObj[outerAttr][0], expectedVal)

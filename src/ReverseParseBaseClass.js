@@ -46,13 +46,14 @@ function _parseParams (params) {
     let key = ((Array.isArray(attrDef) && attrDef[0]['outKey']) || attrDef['outKey']) || attrKey
     if (!params[key]) continue
     if (Array.isArray(attrDef) && Array.isArray(params[key])) {
-      parsedObj[key] = this._handleDeepArray(
+      parsedObj[attrKey] = this._handleDeepArray(
         params[key],
         elem => this.getter.exec(elem, attrDef[0]['getters'])
       )
-    } else if (attrDef['parser']) parsedObj[key] = this._handleParser(params[key], attrDef['parser'])
+    } else if (attrDef['parser']) parsedObj[attrKey] = this._handleParser(params[key], attrDef['parser'])
     else if (!attrDef['getters']) continue
-    else parsedObj[key] = this.getter.exec(params[key], attrDef['getters'])
+    else parsedObj[attrKey] = this.getter.exec(params[key], attrDef['getters'])
+    if (key !== attrKey) delete parsedObj[key]
   }
 
   return parsedObj
@@ -97,16 +98,17 @@ async function _asyncParseParams (params) {
     let key = ((Array.isArray(attrDef) && attrDef[0]['outKey']) || attrDef['outKey']) || attrKey
     if (!params[key]) continue
     if (Array.isArray(attrDef) && Array.isArray(params[key])) {
-      parsedObj[key] = await this._asyncHandleDeepArray(
+      parsedObj[attrKey] = await this._asyncHandleDeepArray(
         params[key],
         async elem => {
           let val = await this.getter.asyncExec(elem, attrDef[0]['getters'])
           return val
         }
       )
-    } else if (attrDef['parser']) parsedObj[key] = await this._asyncHandleParser(params[key], attrDef['parser'])
+    } else if (attrDef['parser']) parsedObj[attrKey] = await this._asyncHandleParser(params[key], attrDef['parser'])
     else if (!attrDef['getters']) continue
-    else parsedObj[key] = await this.getter.asyncExec(params[key], attrDef['getters'])
+    else parsedObj[attrKey] = await this.getter.asyncExec(params[key], attrDef['getters'])
+    if (key !== attrKey) delete parsedObj[key]
   }
 
   return parsedObj
