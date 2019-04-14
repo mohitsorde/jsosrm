@@ -1200,5 +1200,104 @@ describe('parse input object as per schema defined =>', () => {
         })
       })
     })
+
+    it('parser, custom async validator, custom async setter, explicit outKey, atomic values and custom async getter with deep array =>', () => {
+      let setterArr = ['customSetter', 'toUpper']
+      let validatorArr = ['customValidator']
+      let getterArr = ['asLower', 'appendAsterisk']
+      let outerAttr = 'outerAttr'
+
+      let newInputObj = 'rise*up'
+      let obj = {
+        [outerAttr]: [
+          newInputObj,
+          [newInputObj],
+          [],
+          [[[newInputObj]]]
+        ]
+      }
+
+      function BaseClass (params, update, asyncHandle) {
+        ParserBaseClass.apply(this, arguments)
+      }
+
+      BaseClass.prototype = Object.create(ParserBaseClass.prototype)
+      BaseClass.prototype.constructor = BaseClass
+      BaseClass.prototype.attrDefs = {
+        [outerAttr]: [attrDefgen(
+          validatorArr,
+          setterArr,
+          null,
+          null,
+          false,
+          'myKey',
+          getterArr
+        )[attrName]]
+      }
+      BaseClass.prototype.validator = new ValidatorBaseClass()
+      BaseClass.prototype.validator.pushAll([{
+        key: 'customValidator',
+        desc: 'should have atleat one *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(/\*/.test(val))
+          })
+        }
+      }])
+      BaseClass.prototype.setter = new SetterBaseClass()
+      BaseClass.prototype.setter.pushAll([{
+        key: 'customSetter',
+        desc: 'remove *',
+        impl: function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val.replace(/\*/g, ''))
+          })
+        }
+      }])
+      BaseClass.prototype.getter = new GetterBaseClass()
+      BaseClass.prototype.getter.pushAll([{
+        'key': 'appendAsterisk',
+        'desc': 'appends asterisk at the end',
+        'impl': function (val) {
+          return new Promise((resolve, reject) => {
+            resolve(val + '*')
+          })
+        }
+      }])
+
+      let parsedObj = new BaseClass(obj, false, true)
+      let expectedVal = getter.exec(BaseClass.prototype.setter.exec(newInputObj.replace(/\*/g, '')), ['asLower']) + '*'
+      return parsedObj.getParams().then((outputObj2) => {
+        let outerAttr = 'myKey'
+        assert.notExists(outputObj2.errCode, 'no error found')
+        return parsedObj.getReverseParams().then((outputObj) => {
+          assert.property(outputObj, outerAttr)
+          assert.isArray(outputObj[outerAttr])
+          assert.lengthOf(outputObj[outerAttr], 4)
+          assert.strictEqual(outputObj[outerAttr][0], expectedVal)
+          assert.isArray(outputObj[outerAttr][1])
+          assert.strictEqual(outputObj[outerAttr][1][0], expectedVal)
+          assert.isArray(outputObj[outerAttr][2])
+          assert.lengthOf(outputObj[outerAttr][2], 0)
+          assert.isArray(outputObj[outerAttr][3])
+          assert.strictEqual(outputObj[outerAttr][3][0][0][0], expectedVal)
+          assert.notStrictEqual(obj[Object.keys(obj)[0]][0], outputObj[outerAttr][0])
+          return (new BaseClass(null)).getReverseParams(outputObj2, true)
+            .then((outputObj) => {
+              assert.property(outputObj, outerAttr)
+              assert.isArray(outputObj[outerAttr])
+              assert.lengthOf(outputObj[outerAttr], 4)
+              assert.strictEqual(outputObj[outerAttr][0], expectedVal)
+              assert.isArray(outputObj[outerAttr][1])
+              assert.strictEqual(outputObj[outerAttr][1][0], expectedVal)
+              assert.isArray(outputObj[outerAttr][2])
+              assert.lengthOf(outputObj[outerAttr][2], 0)
+              assert.isArray(outputObj[outerAttr][3])
+              assert.strictEqual(outputObj[outerAttr][3][0][0][0], expectedVal)
+              assert.notStrictEqual(obj[Object.keys(obj)[0]][0], outputObj[outerAttr][0])
+            })
+        })
+      })
+    })
   })
 })

@@ -43,7 +43,7 @@ function _parseParams (params) {
   let parsedObj = Object.assign({}, params)
   for (let attrKey in this.attrDefs) {
     let attrDef = this.attrDefs[attrKey]
-    let key = attrDef['outKey'] || attrKey
+    let key = ((Array.isArray(attrDef) && attrDef[0]['outKey']) || attrDef['outKey']) || attrKey
     if (!params[key]) continue
     if (Array.isArray(attrDef) && Array.isArray(params[key])) {
       parsedObj[key] = this._handleDeepArray(
@@ -94,7 +94,7 @@ async function _asyncParseParams (params) {
   let parsedObj = Object.assign({}, params)
   for (let attrKey in this.attrDefs) {
     let attrDef = this.attrDefs[attrKey]
-    let key = attrDef['outKey'] || attrKey
+    let key = ((Array.isArray(attrDef) && attrDef[0]['outKey']) || attrDef['outKey']) || attrKey
     if (!params[key]) continue
     if (Array.isArray(attrDef) && Array.isArray(params[key])) {
       parsedObj[key] = await this._asyncHandleDeepArray(
