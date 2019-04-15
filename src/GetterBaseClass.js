@@ -77,7 +77,7 @@ function GetterBaseClass () {
       impl: asNumber
     },
     'asJson': {
-      desc: 'returns value or object described by input',
+      desc: 'returns JSON parsed input',
       impl: asJson
     },
     'asLower': {
