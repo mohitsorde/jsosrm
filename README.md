@@ -121,11 +121,40 @@ console.log(getter.isValidUtilKey('anyRandomKey'))
 // Error: Unknown utility key provided
 ```
 
-### _instance_.asyncExec()
+### _instance_.asyncExec(value, arrayOfUtilKeys)
 
 
-### _instance_.exec()
+### _instance_.exec(value, arrayOfUtilKeys)
 
+chain multiple instance utility methods on an input value
+
+- *_value_* - input to be processed
+- *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
+
+In case of ValidatorBaseClass instances, returns false at the first validation that fails
+
+```js
+let isValid = validator.exec('testValue', [
+    'isString',
+    'alphabetical',
+    // ... use listAll to know in-built methods
+    'myCustomValidator',
+    // ... any in-built or custom validator methods defined for the instance using push or pushAll
+]) 
+// returns true or false
+```
+
+In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and final value is returned
+
+```js
+let outputValue = setter.exec('<script src="http://malware-..." />', [
+    'htmlEncode',
+    'toUpper',
+    // ... use listAll to know in-built methods
+    'myCustomSetter',
+    // ... any in-built or custom validator methods defined for the instance using push or pushAll
+])
+```
 
 
 ## Meta
