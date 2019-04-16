@@ -81,9 +81,34 @@ setter.push('myCustomSetter', function (val) {
 ```
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_ 
-### _instance_.pushAll()
 
+### _instance_.pushAll(arr)
 
+Multiple utility methods can be pushed into instance simultaneously
+
+- *_arr_* - an array of objects constaining _key_, _impl_ and _desc_ (see *push* method for definitions) for each utility function to be pushed 
+
+```js
+validator.pushAll([
+    {
+        "key": 'myCustomValidator', 
+        "impl": function (val) {
+            // write your constraints that the val should satisfy
+            // if any of your constraints is not met, indicate the validation failed
+            // return false
+            // else the val is valid
+            // return true
+            return /\*/.test(val)
+        },
+        "desc": 'validates that the input contains atleast one *'
+    },
+    // ...
+    // ... more utility functions here ...
+    // ...
+])
+```
+
+*Note*: _the new method will replace an existing utility method with the same key in the instance_
 ### _instance_.isValidUtilKey(utilKey)
 
 returns true if _instance_ has the _utilKey_, else throws an error
