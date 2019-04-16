@@ -18,7 +18,7 @@ Jsosrm is modeled to behave like the traditional ORM, except it does not have a 
 ## Installation
 
 ```sh
-npm install Jsosrm --save
+npm install jsosrm --save
 ```
 
 ## Usage and examples
@@ -31,7 +31,7 @@ import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} f
 
 ValidatorBaseClass, SetterBaseClass, and GetterBaseClass are utility classes. 
 
-### _instance_.listAll()
+### instance._listAll_()
 
 Lists key and description of all in-built and custom _instance_ utility methods
 
@@ -47,7 +47,7 @@ maskCardNumbers => masks all digits except the last 4*/
 ```
 <!-- state likewise can be used for validator and setter -->
 
-### _instance_.push(key, impl, desc)
+### instance._push_(key, impl, desc)
 
 Add a custom utility function to the instance
 
@@ -81,10 +81,10 @@ setter.push('myCustomSetter', function (val) {
 ```
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_ 
-### _instance_.pushAll()
+### instance._pushAll_()
 
 
-### _instance_.isValidUtilKey(utilKey)
+### instance._isValidUtilKey_(utilKey)
 
 returns true if _instance_ has the _utilKey_, else throws an error
 
@@ -96,10 +96,10 @@ console.log(getter.isValidUtilKey('anyRandomKey'))
 // Error: Unknown utility key provided
 ```
 
-### _instance_.asyncExec()
+### instance._asyncExec_()
 
 
-### _instance_.exec()
+### instance._exec_()
 
 
 
