@@ -182,7 +182,7 @@ validator.pushAll([
 *Note*: _the new method will replace an existing utility method with the same key in the instance_
 
 ### <a name="listAll">
-_instance_.listAll()
+**_instance_.listAll()**
 </a>
 
 Lists key and description of all in-built and custom _instance_ utility methods
