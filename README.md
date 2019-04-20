@@ -29,7 +29,7 @@ Jsosrm provides four classes that can be imported:
 import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'Jsosrm'
 ```
 
-Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. The constructor does not take any arguments.
+Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. ALso, custom utilities for each instance can be defined. The constructor does not take any arguments.
 
 ```js
 let validator = new ValidatorBaseClass()
@@ -124,7 +124,7 @@ Add a custom utility function to the instance
 - *impl* - definition of the utility method
 - *desc* - description of the utility method
 
-For ValidatorBaseClass instances, the utilty function takes a value as input, validates constraints we define and accordingly returns true or false
+For ValidatorBaseClass instances, the utilty function takes a value as input, validates constraints we define and accordingly returns true or false. For async utilites, the function should return a Promise that resolves to true or false accordingly.
 
 ```js
 let validator = new ValidatorBaseClass()
@@ -138,14 +138,16 @@ validator.push('myCustomValidator', function (val) {
 }, 'validates that the input contains atleast one *')
 ```
 
-For SetterBaseClass and GetterBaseClass instances, the utility function takes a value as input, transforms it as per our definitions and returns the new value
+For SetterBaseClass and GetterBaseClass instances, the utility function takes a value as input, transforms it as per our definitions and returns the new value. For async utilites, the function should return a Promise that resolves to new value.
 
 ```js
 let setter = new SetterBaseClass()
-setter.push('myCustomSetter', function (val) {
+setter.push('myAsyncCustomSetter', function (val) {
+    return new Promise((resolve, reject) => {  
     // write your transformations here
     // and return the new value
     return val.replace(/[^a-zA-Z]/g, '')
+    })
 }, 'remove non word characters from the input')
 ```
 
