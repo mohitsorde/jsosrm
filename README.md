@@ -29,7 +29,13 @@ Jsosrm provides four classes that can be imported:
 import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'Jsosrm'
 ```
 
-Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. ALso, custom utilities for each instance can be defined. The constructor does not take any arguments.
+Now the usage can be classified into two broad sections - one when we are dealing with simple atomic JS types like string or number and other when we are dealing with complex JS data structure like object. We dive directly to second type, with documentation for first type described [here](#utilities).
+
+### Structurer Retriever and Mapper
+
+### Utilities
+
+Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. Also, custom utilities for each instance can be defined. The constructor does not take any arguments.
 
 ```js
 let validator = new ValidatorBaseClass()
