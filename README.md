@@ -29,23 +29,86 @@ Jsosrm provides four classes that can be imported:
 import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'Jsosrm'
 ```
 
-ValidatorBaseClass, SetterBaseClass, and GetterBaseClass are utility classes. 
-
-### _instance_.listAll()
-
-Lists key and description of all in-built and custom _instance_ utility methods
+Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. The constructor does not take any arguments.
 
 ```js
-console.log(getter.listAll())
-/* asBoolean => converts literals to boolean type
-asNumber => converts literal to Number type
-asJson => returns JSON parsed input
-asLower => converts input to lower case
-asUpper => converts input to upper case
-dateAsString => converts input to date string
-maskCardNumbers => masks all digits except the last 4*/
+let validator = new ValidatorBaseClass()
+let setter = new SetterBaseClass()
+let getter = new GetterBaseClass()
 ```
-<!-- state likewise can be used for validator and setter -->
+
+To consume or manipulate the utilities, the instances are provided with the following functions:
+
+ - [_instance_.exec](#_instance_.exec)
+ - [_instance_.asyncExec](#_instance_.asyncExec)
+ - [_instance_.push](#_instance_.push)
+ - [_instance_.pushAll](#_instance_.pushAll)
+ - [_instance_.listAll](#_instance_.listAll)
+ - [_instance_.isValidUtilKey](#_instance_.isValidUtilKey)
+
+ ### _instance_.exec(value, arrayOfUtilKeys)
+
+chain multiple instance utility methods on an input value
+
+- *_value_* - input to be processed
+- *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
+
+In case of ValidatorBaseClass instances, returns false at the first validation that fails or true if all pass
+
+```js
+let isValid = validator.exec('testValue', [
+    'isString',
+    'alphabetical',
+    // ... use listAll to know in-built methods
+    'myCustomValidator',
+    // ... any in-built or custom validator methods defined for the instance using push or pushAll
+]) 
+// returns true or false
+```
+
+In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and final value is returned
+
+```js
+let outputValue = setter.exec('<script src="http://malware-..." />', [
+    'htmlEncode',
+    'toUpper',
+    // ... use listAll to know in-built methods
+    'myCustomSetter',
+    // ... any in-built or custom validator methods defined for the instance using push or pushAll
+])
+```
+
+### _instance_.asyncExec(value, arrayOfUtilKeys)
+
+chain multiple instance utility methods, including any asynchronous methods on an input value and return a promise
+
+- *_value_* - input to be processed
+- *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
+
+In case of ValidatorBaseClass instances, returns promise resolving to false at the first validation that fails or to true if all pass
+
+```js
+let isValid = validator.exec('testValue', [
+    'isString',
+    'alphabetical',
+    // ... use listAll to know in-built methods
+    'myAsyncCustomValidator',
+    // ... any custom or async validator methods defined for the instance using push or pushAll
+]) 
+// returns true or false
+```
+
+In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and promise that resolves to final value is returned
+
+```js
+let outputValue = setter.exec('<script src="http://malware-..." />', [
+    'htmlEncode',
+    'toUpper',
+    // ... use listAll to know in-built methods
+    'myAsyncCustomSetter',
+    // ... any in-built or custom validator methods defined for the instance using push or pushAll
+])
+```
 
 ### _instance_.push(key, impl, desc)
 
@@ -109,6 +172,24 @@ validator.pushAll([
 ```
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_
+
+### _instance_.listAll()
+
+Lists key and description of all in-built and custom _instance_ utility methods
+
+```js
+console.log(getter.listAll())
+/* asBoolean => converts literals to boolean type
+asNumber => converts literal to Number type
+asJson => returns JSON parsed input
+asLower => converts input to lower case
+asUpper => converts input to upper case
+dateAsString => converts input to date string
+maskCardNumbers => masks all digits except the last 4*/
+```
+<!-- state likewise can be used for validator and setter -->
+
+
 ### _instance_.isValidUtilKey(utilKey)
 
 returns true if _instance_ has the _utilKey_, else throws an error
@@ -121,41 +202,6 @@ console.log(getter.isValidUtilKey('anyRandomKey'))
 // Error: Unknown utility key provided
 ```
 
-### _instance_.asyncExec(value, arrayOfUtilKeys)
-
-
-### _instance_.exec(value, arrayOfUtilKeys)
-
-chain multiple instance utility methods on an input value
-
-- *_value_* - input to be processed
-- *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
-
-In case of ValidatorBaseClass instances, returns false at the first validation that fails
-
-```js
-let isValid = validator.exec('testValue', [
-    'isString',
-    'alphabetical',
-    // ... use listAll to know in-built methods
-    'myCustomValidator',
-    // ... any in-built or custom validator methods defined for the instance using push or pushAll
-]) 
-// returns true or false
-```
-
-In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and final value is returned
-
-```js
-let outputValue = setter.exec('<script src="http://malware-..." />', [
-    'htmlEncode',
-    'toUpper',
-    // ... use listAll to know in-built methods
-    'myCustomSetter',
-    // ... any in-built or custom validator methods defined for the instance using push or pushAll
-])
-```
-
 
 ## Meta
 
@@ -164,12 +210,3 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 [https://github.com/mohitsorde/Jsosrm](https://github.com/mohitsorde/Jsosrm)
 
 ## Contributing
-
-1. Fork it (<https://github.com/mohitsorde/Jsosrm/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
-
-<!-- Markdown link & img dfn's -->
-[npm-url]: https://npmjs.org/package/datadog-metrics
