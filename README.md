@@ -39,14 +39,16 @@ let getter = new GetterBaseClass()
 
 To consume or manipulate the utilities, the instances are provided with the following functions:
 
- - [_instance_.exec](#_instance_.exec)
- - [_instance_.asyncExec](#_instance_.asyncExec)
- - [_instance_.push](#_instance_.push)
- - [_instance_.pushAll](#_instance_.pushAll)
- - [_instance_.listAll](#_instance_.listAll)
- - [_instance_.isValidUtilKey](#_instance_.isValidUtilKey)
+ - [exec](#exec)
+ - [asyncExec](#asyncExec)
+ - [push](#push)
+ - [pushAll](#pushAll)
+ - [listAll](#listAll)
+ - [isValidUtilKey](#isValidUtilKey)
 
+<a name="exec">
  ### _instance_.exec(value, arrayOfUtilKeys)
+</a>
 
 chain multiple instance utility methods on an input value
 
@@ -78,7 +80,9 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ])
 ```
 
+<a name="asyncExec">
 ### _instance_.asyncExec(value, arrayOfUtilKeys)
+</a>
 
 chain multiple instance utility methods, including any asynchronous methods on an input value and return a promise
 
@@ -110,7 +114,9 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ])
 ```
 
+<a name="push">
 ### _instance_.push(key, impl, desc)
+</a>
 
 Add a custom utility function to the instance
 
@@ -145,7 +151,9 @@ setter.push('myCustomSetter', function (val) {
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_ 
 
+<a name="pushAll">
 ### _instance_.pushAll(arr)
+</a>
 
 Multiple utility methods can be pushed into instance simultaneously
 
@@ -173,7 +181,9 @@ validator.pushAll([
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_
 
+< name="listAll">
 ### _instance_.listAll()
+</a>
 
 Lists key and description of all in-built and custom _instance_ utility methods
 
@@ -189,8 +199,9 @@ maskCardNumbers => masks all digits except the last 4*/
 ```
 <!-- state likewise can be used for validator and setter -->
 
-
+<a name="isValidUtilKey">
 ### _instance_.isValidUtilKey(utilKey)
+</a>
 
 returns true if _instance_ has the _utilKey_, else throws an error
 
