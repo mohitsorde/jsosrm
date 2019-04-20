@@ -114,8 +114,8 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ])
 ```
 
-<a name="push">
-### _instance_.push(key, impl, desc)
+### <a name="push">
+**_instance_.push(key, impl, desc)**
 </a>
 
 Add a custom utility function to the instance
