@@ -146,7 +146,7 @@ setter.push('myAsyncCustomSetter', function (val) {
     return new Promise((resolve, reject) => {  
     // write your transformations here
     // and return the new value
-    return val.replace(/[^a-zA-Z]/g, '')
+    resolve(val.replace(/[^a-zA-Z]/g, ''))
     })
 }, 'remove non word characters from the input')
 ```
