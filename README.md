@@ -181,7 +181,7 @@ validator.pushAll([
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_
 
-< name="listAll">
+<a name="listAll">
 ### _instance_.listAll()
 </a>
 
