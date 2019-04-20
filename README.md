@@ -46,8 +46,8 @@ To consume or manipulate the utilities, the instances are provided with the foll
  - [listAll](#listAll)
  - [isValidUtilKey](#isValidUtilKey)
 
-<a name="exec">
- ### _instance_.exec(value, arrayOfUtilKeys)
+### <a name="exec">
+**_instance_.exec(value, arrayOfUtilKeys)**
 </a>
 
 chain multiple instance utility methods on an input value
@@ -80,8 +80,8 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ])
 ```
 
-<a name="asyncExec">
-### _instance_.asyncExec(value, arrayOfUtilKeys)
+### <a name="asyncExec">
+**_instance_.asyncExec(value, arrayOfUtilKeys)**
 </a>
 
 chain multiple instance utility methods, including any asynchronous methods on an input value and return a promise
@@ -151,8 +151,8 @@ setter.push('myCustomSetter', function (val) {
 
 *Note*: _the new method will replace an existing utility method with the same key in the instance_ 
 
-<a name="pushAll">
-### _instance_.pushAll(arr)
+### <a name="pushAll">
+**_instance_.pushAll(arr)**
 </a>
 
 Multiple utility methods can be pushed into instance simultaneously
@@ -199,8 +199,8 @@ maskCardNumbers => masks all digits except the last 4*/
 ```
 <!-- state likewise can be used for validator and setter -->
 
-<a name="isValidUtilKey">
-### _instance_.isValidUtilKey(utilKey)
+### <a name="isValidUtilKey">
+**_instance_.isValidUtilKey(utilKey)**
 </a>
 
 returns true if _instance_ has the _utilKey_, else throws an error
