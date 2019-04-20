@@ -26,7 +26,7 @@ npm install jsosrm --save
 Jsosrm provides four classes that can be imported:
 
 ```js
-import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'Jsosrm'
+import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'jsosrm'
 ```
 
 Now the usage can be classified into two broad sections - one when we are dealing with simple atomic JS types like string or number and other when we are dealing with complex JS data structure like object. We dive directly to second type, with documentation for first type described [here](#utilities).
@@ -64,17 +64,17 @@ chain multiple instance utility methods on an input value
 In case of ValidatorBaseClass instances, returns false at the first validation that fails or true if all pass
 
 ```js
-let isValid = validator.exec('testValue', [
+let isValid = validator.exec('t3432df', [
     'isString',
     'alphabetical',
     // ... use listAll to know in-built methods
     'myCustomValidator',
     // ... any in-built or custom validator methods defined for the instance using push or pushAll
 ]) 
-// returns true or false
+// returns false in this case as test for `alhpabetical` fails
 ```
 
-In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and final value is returned
+In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method. Output of first utility is input to second utility and so on the chain continues till final value is returned
 
 ```js
 let outputValue = setter.exec('<script src="http://malware-..." />', [
@@ -84,13 +84,14 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
     'myCustomSetter',
     // ... any in-built or custom validator methods defined for the instance using push or pushAll
 ])
+// escapes html characters like <, >, & ...etc, converts all to Capital case and so on ...
 ```
 
 ### <a name="asyncExec">
 **_instance_.asyncExec(value, arrayOfUtilKeys)**
 </a>
 
-chain multiple instance utility methods, including any asynchronous methods on an input value and return a promise
+chain multiple instance utility methods like [exec](#exec), including any asynchronous methods on an input value and return a promise
 
 - *_value_* - input to be processed
 - *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
@@ -130,7 +131,7 @@ Add a custom utility function to the instance
 - *impl* - definition of the utility method
 - *desc* - description of the utility method
 
-For ValidatorBaseClass instances, the utilty function takes a value as input, validates constraints we define and accordingly returns true or false. For async utilites, the function should return a Promise that resolves to true or false accordingly.
+For ValidatorBaseClass instances, the utilty function takes a value as input. We should validate constraints we need inside the function and accordingly return true or false. For async utilites, the function should return a Promise that resolves to true or false accordingly.
 
 ```js
 let validator = new ValidatorBaseClass()
@@ -144,7 +145,7 @@ validator.push('myCustomValidator', function (val) {
 }, 'validates that the input contains atleast one *')
 ```
 
-For SetterBaseClass and GetterBaseClass instances, the utility function takes a value as input, transforms it as per our definitions and returns the new value. For async utilites, the function should return a Promise that resolves to new value.
+For SetterBaseClass and GetterBaseClass instances, the utility function takes a value as input, we should transform it as per our need and return the new value. For async utilites, the function should return a Promise that resolves to new value.
 
 ```js
 let setter = new SetterBaseClass()
