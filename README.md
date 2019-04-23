@@ -5,6 +5,89 @@
 
 ## What it does?
 
+Without loss of generality, let us consider a common web service scenario where form data entered by a user needs validation and transformation as it goes from View to Model via controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
+
+```js
+let input = {
+  'emailId': 'example1@domain.com',
+  'firstName': 'exAmple. oNe',
+  'lastName': 'teSt',
+  'hobbies': ['tennis', 'cricket'],
+  'shippingAddress': [
+    {
+      'lineOne': '#41, teSt SiTe',
+      'city': 'Test. 1 ',
+      'state': 'N.A.',
+      'country': 'NA',
+      'zipCode': '000XXX'
+    }
+  ],
+  'paymentDetails': [{
+    'cardNumber': '2222222222222222'
+  }],
+  'password': 'myPassword*1'
+}
+```
+
+We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting password or making names as Uppercased or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
+
+How about if we could define all these requirements verbally like below:
+
+```js
+const UserSchema = {
+  'emailId': {
+    'validators': [
+      'maxChar_256',
+      'emailId'
+    ],
+    'setters': [
+      'htmlEncode',
+      'toLower'
+    ]
+  },
+  'firstName': {
+    'validators': [
+      'maxChar_64',
+      'nameOnly'
+    ],
+    'setters': [
+      'htmlEncode',
+      'nameFormat'
+    ]
+  },
+  'lastName': {
+    'validators': [
+      'maxChar_64',
+      'nameOnly'
+    ],
+    'setters': [
+      'htmlEncode',
+      'nameFormat'
+    ],
+    'optional': true
+  },
+  'hobbies': [{
+    'validators': ['alphabetical'],
+    'setters': ['toUpper'],
+    'getters': ['asLower']
+  }],
+  'shippingAddress': {
+    'parser': [UserAddressParser]
+  },
+  'paymentDetails': {
+    'parser': [PaymentDetailsParser]
+  }
+}
+```
+
+and use it as:
+
+```js
+let parsedUser = (new UserParser(input)).getParams()
+```
+
+Now parsedUser would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. 
+
 When your system acts as a medium of data exchange between an insecure source and a protected target, Jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when Jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
 
 <!-- image -->
@@ -32,6 +115,8 @@ import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} f
 Now the usage can be classified into two broad sections - one when we are dealing with simple atomic JS types like string or number and other when we are dealing with complex JS data structure like object. We dive directly to second type, with documentation for first type described [here](#utilities).
 
 ### Structurer Retriever and Mapper
+
+
 
 ### Utilities
 
