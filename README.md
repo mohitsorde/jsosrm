@@ -34,6 +34,7 @@ We definitely require validations for each element like email format or preventi
 How about if we could define all these requirements verbally like below:
 
 <a name="example">
+</a>
 ```js
 const UserSchema = {
   'emailId': {
@@ -62,7 +63,6 @@ const UserSchema = {
   }
 }
 ```
-</a>
 
 and use it as:
 
