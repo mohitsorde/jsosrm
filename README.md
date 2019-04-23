@@ -5,7 +5,9 @@
 
 ## What it does?
 
+<a name="example">
 Without loss of generality, let us consider a common web service scenario where form data entered by a user needs validation and transformation as it goes from View to Model via Controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
+</a>
 
 ```js
 let input = {
@@ -30,8 +32,7 @@ let input = {
 ```
 
 We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting the password element or making names as upper case or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
-
-<a name="example">
+<a name="example-schema">
 How about if we could define all these requirements verbally like below:
 </a>
 
@@ -67,10 +68,26 @@ const UserSchema = {
 and use it as:
 
 ```js
-let parsedUser = (new UserParser(input)).getParams()
+let parsedUser = (new UserModel(input)).getParams()
+```
+
+and vice-versa retrieve like:
+
+```js
+let reverseParsedUser = (new UserModel()).getReverseParams(parsedUser)
 ```
 
 Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
+
+Features:
+ - support for deep nesting of objects and arrays
+ - chaining of utility functions
+ - custom sync/async validators, setters and getters
+ - error contains exact path to reach the failed element in nested object
+ - provides the validation key that was failed
+ - provide different output key for object attributes
+ - retrieves the original key during get operation
+ - update mode 
 
 When your system acts as a medium of data exchange between an insecure source and a protected target, Jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when Jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
 
@@ -171,6 +188,17 @@ Now lets have a look at how to define schema.
 ### <a name="schema">
 **Schema**
 </a>
+
+Schema is simple JS object with keys the same as input object. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
+ - for any key
+    - optional
+    - outKey
+ - for key with atomic values (like string or number)
+    - validators
+    - setters
+    - getters
+ - for key whose value is complex data structure like object or array
+    - parser
 
 
 ### Utilities
