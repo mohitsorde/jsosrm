@@ -11,7 +11,7 @@ Without loss of generality, let us consider a common web service scenario where 
 let input = {
   'emailId': 'example1@domain.com',
   'firstName': 'exAmple. oNe',
-  'lastName': 'teSt',
+  'lastName': '<script src="https://malicious.worm..."></script>',
   'hobbies': ['tennis', 'cricket'],
   'shippingAddress': [
     {
@@ -29,41 +29,23 @@ let input = {
 }
 ```
 
-We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting password or making names as Uppercased or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
+We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting the password element or making names as upper case or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
 
 How about if we could define all these requirements verbally like below:
 
 ```js
 const UserSchema = {
   'emailId': {
-    'validators': [
-      'maxChar_256',
-      'emailId'
-    ],
-    'setters': [
-      'htmlEncode',
-      'toLower'
-    ]
+    'validators': ['maxChar_256', 'emailId'],
+    'setters': ['htmlEncode', 'toLower']
   },
   'firstName': {
-    'validators': [
-      'maxChar_64',
-      'nameOnly'
-    ],
-    'setters': [
-      'htmlEncode',
-      'nameFormat'
-    ]
+    'validators': ['maxChar_64', 'nameOnly'],
+    'setters': ['htmlEncode', 'nameFormat']
   },
   'lastName': {
-    'validators': [
-      'maxChar_64',
-      'nameOnly'
-    ],
-    'setters': [
-      'htmlEncode',
-      'nameFormat'
-    ],
+    'validators': ['maxChar_64', 'nameOnly'],
+    'setters': ['htmlEncode', 'nameFormat'],
     'optional': true
   },
   'hobbies': [{
@@ -86,7 +68,7 @@ and use it as:
 let parsedUser = (new UserParser(input)).getParams()
 ```
 
-Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (how _UserParser_ is linked to _UserSchema_ is documented [here](#structurer-retriever-mapper))
+Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
 
 When your system acts as a medium of data exchange between an insecure source and a protected target, Jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when Jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
 
