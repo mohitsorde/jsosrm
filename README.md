@@ -31,10 +31,10 @@ let input = {
 
 We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting the password element or making names as upper case or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
 
-How about if we could define all these requirements verbally like below:
-
 <a name="example">
+How about if we could define all these requirements verbally like below:
 </a>
+
 ```js
 const UserSchema = {
   'emailId': {
