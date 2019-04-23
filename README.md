@@ -5,7 +5,7 @@
 
 ## What it does?
 
-Without loss of generality, let us consider a common web service scenario where form data entered by a user needs validation and transformation as it goes from View to Model via controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
+Without loss of generality, let us consider a common web service scenario where form data entered by a user needs validation and transformation as it goes from View to Model via Controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
 
 ```js
 let input = {
@@ -86,7 +86,7 @@ and use it as:
 let parsedUser = (new UserParser(input)).getParams()
 ```
 
-Now parsedUser would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. 
+Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (how _UserParser_ is linked to _UserSchema_ is documented [here](#structurer-retriever-mapper))
 
 When your system acts as a medium of data exchange between an insecure source and a protected target, Jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when Jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
 
