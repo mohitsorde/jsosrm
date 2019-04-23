@@ -33,6 +33,7 @@ We definitely require validations for each element like email format or preventi
 
 How about if we could define all these requirements verbally like below:
 
+<a name="example">
 ```js
 const UserSchema = {
   'emailId': {
@@ -61,6 +62,7 @@ const UserSchema = {
   }
 }
 ```
+</a>
 
 and use it as:
 
@@ -112,6 +114,63 @@ A JS object can be simple key-value pairs or deeply nested with Array and object
   |__ models
   |  |__ myModel.js // a file per ParserBaseClass child
 ```
+
+Instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass with custom sync/async utility functions can be defined in validators, setters and getters folders respectively. For the example mentioned [here](#example), we need a custom getter that will mask the first 12 of a 16 digit payment card. We do so by creating a file named 'paymentDetailsGetter.js' in 'getters' folder
+
+```js
+// .*/getters/paymentDetailsGetter.js
+import {GetterBaseClass} from 'jsosrm'
+const paymentDetailsGetter = new GetterBaseClass()
+paymentDetailsGetter.push('maskCardNumbers', function (val) {
+  return val.replace(/([0-9]{12})([0-9]+)/, '************$2')
+}, 'masks all digits except the last 4')
+module.exports = paymentDetailsGetter
+```
+
+Similarly we can define an asynchronous encryption setter for password element if needed by creating instance of ValidatorBaseClass in 'validators' folder.
+
+### <a name="parser-child">
+**ParserBaseClass child**
+</a>
+
+Let us say our schema 'UserSchema' is created in 'schemas' folder (we will see how to create schema later [here](#schema)). We now create a model 'UserModel' for our schema 'UserSchema' by extending ParserBaseClass and overriding the following attributes:
+
+```js
+import {ParserBaseClass} from 'jsosrm'
+
+import {UserSchema} from '../schemas/UserSchema'
+// import {userValidator} from '../validators/userValidator'
+// import {userSetter} from '../setters/userSetter'
+// import {userGetter} from '../getters/userGetter'
+
+function UserModel (params, update, asyncHandle) { // constructor parameters are explained below
+  ParserBaseClass.apply(this, arguments)
+}
+
+UserModel.prototype = Object.create(ParserBaseClass.prototype) // extend the prototype chain
+UserModel.prototype.constructor = UserModel
+UserParser.prototype.attrDefs = UserSchema
+// for default and custom validators, setters and getters
+// UserParser.prototype.validator = userValidator
+// UserParser.prototype.setter = userSetter
+// UserParser.prototype.getter = userGetter
+
+module.exports = UserModel
+```
+
+As explained above, a child overrides the following attributes of ParserBaseClass
+ - Required
+    - attrDefs: to link schema with child
+ - Optional
+    - validator: to provide custom validators via instance of ValidatorBaseClass
+    - setter: to provide custom setters via instance of SetterBaseClass
+    - getter: to provide custom getters via instance of GetterBaseClass
+
+Now lets have a look at how to define schema.
+
+### <a name="schema">
+**Schema**
+</a>
 
 
 ### Utilities
