@@ -98,6 +98,20 @@ Now the usage can be classified into two broad sections - one when we are dealin
 
 ### Structurer Retriever and Mapper
 
+A JS object can be simple key-value pairs or deeply nested with Array and objects. Jsosrm provides **ParserBaseClass** with methods that follow depth-first approach to enforce structure and validations defined by schema. ParserBaseClass by default is not associated with any schema. The class is provided with default ValidatorBaseClass, SetterBaseClass and GetterBaseClass instances (see [this](#utilities) for details). To link ParserBaseClass with a schema and custom validators, getters, setters if needed, we first define the following folder structure:
+
+```.
+  |__ validators
+  |  |__ myValidator.js // a file per custom ValidatorBaseClass instance
+  |__ setters
+  |  |__ mySetter.js // a file per custom SetterBaseClass instance
+  |__ getters
+  |  |__ myGetter.js // a file per custom GetterBaseClass instance
+  |__ schemas
+  |  |__ mySchema.js // a file per schema
+  |__ models
+  |  |__ myModel.js // a file per ParserBaseClass child
+```
 
 
 ### Utilities
