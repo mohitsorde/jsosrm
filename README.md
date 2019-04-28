@@ -138,13 +138,17 @@ Instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass with custom
 // .*/getters/paymentDetailsGetter.js
 import {GetterBaseClass} from 'jsosrm'
 const paymentDetailsGetter = new GetterBaseClass()
-paymentDetailsGetter.push('maskCardNumbers', function (val) {
-  return val.replace(/([0-9]{12})([0-9]+)/, '************$2')
-}, 'masks all digits except the last 4')
+paymentDetailsGetter.push(
+  'maskCardNumbers', // note the key here which will later be used in schema
+  function (val) { // implementation of the utility
+    return val.replace(/([0-9]{12})([0-9]+)/, '************$2')
+  }, 
+  'masks all digits except the last 4' // overview of the function
+)
 module.exports = paymentDetailsGetter
 ```
 
-Similarly we can define an asynchronous encryption setter for password element if needed by creating instance of ValidatorBaseClass in 'validators' folder.
+Similarly we can define an asynchronous encryption setter for password element.
 
 ### <a name="parser-child">
 **ParserBaseClass child**
@@ -176,9 +180,9 @@ module.exports = UserModel
 ```
 
 As explained above, a child overrides the following attributes of ParserBaseClass
- - Required
+ - **Required**
     - attrDefs: to link schema with child
- - Optional
+ - **Optional**
     - validator: to provide custom validators via instance of ValidatorBaseClass
     - setter: to provide custom setters via instance of SetterBaseClass
     - getter: to provide custom getters via instance of GetterBaseClass
@@ -200,6 +204,61 @@ Schema is simple JS object with keys the same as input object. We already caught
  - for key whose value is complex data structure like object or array
     - parser
 
+### < a name="optional">
+**optional**
+</a>
+
+An input object may contain keys other than the ones defined in the schema. Jsosrm does not validate or set these undefined keys. But for the defined ones, Jsosrm needs these keys to be strictly present in input. Else it throws the error: 
+
+```js
+{
+  errCode: 'NULL_INPUT',
+  errParam: 'x.x.x.x'
+}
+```
+
+where _errParam_ is the full path to the expected key in input. But there might be a case where a key needs to be optional. But if provided in input, it must strictly passed all the validations and go through transformations. For such keys, specify _optional_ as true in the schema. Else are keys in schema are considered as mandatory.
+
+```js
+const UserSchema = {
+  /**
+   * definitions for other keys
+   **/
+  'hobbies': [{
+    'validators': ['alphabetical'],
+    'setters': ['toUpper'],
+    'getters': ['asLower'],
+    'optional': true
+  }],
+  /**
+   * definitions for other keys
+   **/
+}
+```
+
+### < a name="out-key">
+**outKey**
+</a>
+
+Besides transforming values, often need arises to transform an input key to another name. For such cases, specify the new identification for input key as _outKey_ in the schema.
+
+```js
+const UserSchema = {
+  /**
+   * definitions for other keys
+   **/
+  'emailId': {
+    'validators': ['maxChar_256', 'emailId'],
+    'setters': ['htmlEncode', 'toLower'],
+    'outKey': '_id' // 'emailId' key will be replaced by '_id'
+  },
+  /**
+   * definitions for other keys
+   **/
+}
+```
+
+Note that when we retrieve the parsed object which now has the outKey specified via _getReverseParams_, we get the original input key. This is automatically handled by Jsosrm.
 
 ### Utilities
 
