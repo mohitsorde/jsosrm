@@ -121,7 +121,7 @@ console.log(reverseParsedUser)
 */
 ```
 
-Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
+Now 'parsedUser' would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
 
 Features:
  - support for deep nesting of objects and arrays
@@ -161,7 +161,7 @@ Now the usage can be classified into two broad sections - one when we are dealin
 
 ### Structurer Retriever and Mapper
 
-A JS object can be simple key-value pairs or deeply nested with Array and objects. Jsosrm provides **ParserBaseClass** with methods that follow depth-first approach to enforce structure and validations defined by schema. ParserBaseClass by default is not associated with any schema. The class is provided with default ValidatorBaseClass, SetterBaseClass and GetterBaseClass instances (see [this](#utilities) for details). To link ParserBaseClass with a schema and custom validators, getters, setters if needed, we first define the following folder structure:
+A JS object can be simple key-value pairs or deeply nested with Array and more objects. Jsosrm provides **ParserBaseClass** with methods that follow depth-first approach to enforce structure and validations defined by schema. ParserBaseClass by default is not associated with any schema. The class is provided with default ValidatorBaseClass, SetterBaseClass and GetterBaseClass instances (see [this](#utilities) for details). To link ParserBaseClass with a schema and custom validators, getters, setters if needed, we first define the following folder structure:
 
 ```.
   |__ validators
@@ -192,7 +192,7 @@ paymentDetailsGetter.push(
 module.exports = paymentDetailsGetter
 ```
 
-Similarly we can define an asynchronous encryption setter for password element and so on wherever applicable.
+Similarly we can define an asynchronous encryption **setter** for password element and so on wherever applicable.
 
 ### <a name="parser-child">
 **ParserBaseClass child**
@@ -201,7 +201,7 @@ Similarly we can define an asynchronous encryption setter for password element a
 Let us say our schema 'UserSchema' is created in 'schemas/userSchema.js' file (we will see how to create schema later [here](#schema)). We now create a model 'UserModel' for our schema 'UserSchema' by extending ParserBaseClass and overriding the following attributes:
 
  - **Required**
-    - attrDefs: to link schema with child
+    - attrDefs: to link schema with ParserBaseClass child
  - **Optional** (to provide utilities on top of default ones)
     - validator: to provide custom validators via instance of ValidatorBaseClass
     - setter: to provide custom setters via instance of SetterBaseClass
@@ -237,7 +237,7 @@ Now lets have a look at how to define schema.
 **Schema**
 </a>
 
-Schema is simple JS object with keys the same as input object. In the schema, value of a key is an object with parameters that conforms to a Jsosrm specification. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
+Schema is a simple JS object with the same keys as input object. In the schema, value of a key is an object with parameters that conforms to a Jsosrm specification. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
  - for any key
     - optional
     - outKey
@@ -261,7 +261,7 @@ An input object may contain keys other than the ones defined in the schema. Jsos
 }
 ```
 
-where **errParam** is the full path to the expected key in input. But there might be a case where a key needs to be optional, but must strictly pass all the validations and go through transformations if provided in input. For such keys, specify _optional_ as true in the schema.
+where **errParam** is the full path to the expected key in input. But there might be a case where a key needs to be optional, yet must strictly pass all the validations and go through transformations when present in input. For such keys, specify _optional_ as true in the schema.
 
 ```js
 // schemas/UserSchema.js
@@ -284,7 +284,7 @@ export const UserSchema = {
 **outKey**
 </a>
 
-Besides transforming values, often need arises to transform an input key to another name. For such cases, specify the new identification for input key as _outKey_ in the schema.
+Besides transforming values, often the need arises to transform an input key to another name. For such cases, specify the new identification for input key as _outKey_ in the schema.
 
 ```js
 // schemas/UserSchema.js
@@ -295,7 +295,7 @@ export const UserSchema = {
   'emailId': {
     'validators': ['maxChar_256', 'emailId'],
     'setters': ['htmlEncode', 'toLower'],
-    'outKey': '_id' // 'emailId' key will be replaced by '_id'
+    'outKey': '_id' // 'emailId' key will be replaced by '_id' while setters are executed
   },
   /**
    * definitions for other keys
@@ -309,7 +309,7 @@ Note that when we retrieve the parsed object which now has the outKey specified 
 **validators, setters, getters**
 </a>
 
-validators, setters and getters are array of keys of default and custom utils that have been provided to child of 'ParserBaseClass' via instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass respectively (see [this](#parser-child) for details). Value of input key must pass all the validations specified in the validators array and are transformed by each setter utility function specified in setters array. Vice-versa, when retriving the object via _getReverseParams_, the returned value is transformed by each getter utility function specified in getters array.
+validators, setters and getters are array of keys of default and custom utils that have been provided to child of 'ParserBaseClass' via instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass respectively (see [this](#parser-child) for details). Value of input key must pass all the validations specified in the validators array and are transformed by each setter utility function specified in setters array. Vice-versa, when retrieving the object via _getReverseParams_, the returned value is transformed by each getter utility function specified in getters array.
 
 We may choose to specify any or all of them for a key as per our need.
 
@@ -329,7 +329,7 @@ export const UserSchema = {
 }
 ```
 
-### <a name='parser-in-schema>
+### <a name="parser-in-schema">
 **parser**
 </a>
 
