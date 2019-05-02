@@ -57,7 +57,7 @@ const UserSchema = {
     'getters': ['asLower']
   }],
   'shippingAddress': {
-    'parser': [UserAddressParser]
+    'parser': [AddressModel]
   },
   'paymentDetails': {
     'parser': [PaymentDetailsParser]
@@ -148,18 +148,26 @@ paymentDetailsGetter.push(
 module.exports = paymentDetailsGetter
 ```
 
-Similarly we can define an asynchronous encryption setter for password element.
+Similarly we can define an asynchronous encryption setter for password element and so on wherever applicable.
 
 ### <a name="parser-child">
 **ParserBaseClass child**
 </a>
 
-Let us say our schema 'UserSchema' is created in 'schemas' folder (we will see how to create schema later [here](#schema)). We now create a model 'UserModel' for our schema 'UserSchema' by extending ParserBaseClass and overriding the following attributes:
+Let us say our schema 'UserSchema' is created in 'schemas/userSchema.js' file (we will see how to create schema later [here](#schema)). We now create a model 'UserModel' for our schema 'UserSchema' by extending ParserBaseClass and overriding the following attributes:
+
+ - **Required**
+    - attrDefs: to link schema with child
+ - **Optional** (to provide utilities on top of default ones)
+    - validator: to provide custom validators via instance of ValidatorBaseClass
+    - setter: to provide custom setters via instance of SetterBaseClass
+    - getter: to provide custom getters via instance of GetterBaseClass
 
 ```js
+// models/userParserClass.js
 import {ParserBaseClass} from 'jsosrm'
 
-import {UserSchema} from '../schemas/UserSchema'
+import {UserSchema} from '../schemas/userSchema'
 // import {userValidator} from '../validators/userValidator'
 // import {userSetter} from '../setters/userSetter'
 // import {userGetter} from '../getters/userGetter'
@@ -168,9 +176,9 @@ function UserModel (params, update, asyncHandle) { // constructor parameters are
   ParserBaseClass.apply(this, arguments)
 }
 
-UserModel.prototype = Object.create(ParserBaseClass.prototype) // extend the prototype chain
+UserModel.prototype = Object.create(ParserBaseClass.prototype) // extend the class
 UserModel.prototype.constructor = UserModel
-UserParser.prototype.attrDefs = UserSchema
+UserParser.prototype.attrDefs = UserSchema // link the schema
 // for default and custom validators, setters and getters
 // UserParser.prototype.validator = userValidator
 // UserParser.prototype.setter = userSetter
@@ -179,21 +187,13 @@ UserParser.prototype.attrDefs = UserSchema
 module.exports = UserModel
 ```
 
-As explained above, a child overrides the following attributes of ParserBaseClass
- - **Required**
-    - attrDefs: to link schema with child
- - **Optional**
-    - validator: to provide custom validators via instance of ValidatorBaseClass
-    - setter: to provide custom setters via instance of SetterBaseClass
-    - getter: to provide custom getters via instance of GetterBaseClass
-
 Now lets have a look at how to define schema.
 
 ### <a name="schema">
 **Schema**
 </a>
 
-Schema is simple JS object with keys the same as input object. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
+Schema is simple JS object with keys the same as input object. In the schema, value of a key is an object with parameters that conforms to a Jsosrm specification. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
  - for any key
     - optional
     - outKey
@@ -204,11 +204,11 @@ Schema is simple JS object with keys the same as input object. We already caught
  - for key whose value is complex data structure like object or array
     - parser
 
-### < a name="optional">
+### <a name="optional">
 **optional**
 </a>
 
-An input object may contain keys other than the ones defined in the schema. Jsosrm does not validate or set these undefined keys. But for the defined ones, Jsosrm needs these keys to be strictly present in input. Else it throws the error: 
+An input object may contain keys other than the ones defined in the schema. Jsosrm does not validate or set these other keys. But for the defined ones, Jsosrm needs these keys to be strictly present in input. Else it throws the error: 
 
 ```js
 {
@@ -217,33 +217,34 @@ An input object may contain keys other than the ones defined in the schema. Jsos
 }
 ```
 
-where _errParam_ is the full path to the expected key in input. But there might be a case where a key needs to be optional. But if provided in input, it must strictly passed all the validations and go through transformations. For such keys, specify _optional_ as true in the schema. Else are keys in schema are considered as mandatory.
+where **errParam** is the full path to the expected key in input. But there might be a case where a key needs to be optional, but must strictly pass all the validations and go through transformations if provided in input. For such keys, specify _optional_ as true in the schema.
 
 ```js
-const UserSchema = {
+// schemas/UserSchema.js
+export const UserSchema = {
   /**
    * definitions for other keys
    **/
-  'hobbies': [{
-    'validators': ['alphabetical'],
-    'setters': ['toUpper'],
-    'getters': ['asLower'],
+  'lastName': {
+    'validators': ['maxChar_64', 'nameOnly'],
+    'setters': ['htmlEncode', 'nameFormat'],
     'optional': true
-  }],
+  },
   /**
    * definitions for other keys
    **/
 }
 ```
 
-### < a name="out-key">
+### <a name="out-key">
 **outKey**
 </a>
 
 Besides transforming values, often need arises to transform an input key to another name. For such cases, specify the new identification for input key as _outKey_ in the schema.
 
 ```js
-const UserSchema = {
+// schemas/UserSchema.js
+export const UserSchema = {
   /**
    * definitions for other keys
    **/
@@ -259,6 +260,277 @@ const UserSchema = {
 ```
 
 Note that when we retrieve the parsed object which now has the outKey specified via _getReverseParams_, we get the original input key. This is automatically handled by Jsosrm.
+
+### <a name="val-set-get">
+**validators, setters, getters**
+</a>
+
+validators, setters and getters are array of keys of default and custom utils that have been provided to child of 'ParserBaseClass' via instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass respectively (see [this](#parser-child) for details). Value of input key must pass all the validations specified in the validators array and are transformed by each setter utility function specified in setters array. Vice-versa, when retriving the object via _getReverseParams_, the returned value is transformed by each getter utility function specified in getters array.
+
+We may choose to specify any or all of them for a key as per our need.
+
+```js
+// schemas/UserSchema.js
+export const UserSchema = {
+  /**
+   * definitions for other keys
+   **/
+  'firstName': {
+    'validators': ['maxChar_64', 'nameOnly'],
+    'setters': ['htmlEncode', 'nameFormat']
+  },
+  /**
+   * definitions for other keys
+   **/
+}
+```
+
+### <a name='parser-in-schema>
+**parser**
+</a>
+
+We know how to define schema for keys with single atomic values. A more complex structure over this is when a key has atomic values, but an array or deep array of those like below.
+
+```js
+let input = 
+  /**
+   * other keys
+   **/
+  'hobbies': ['tennis', 'cricket'],
+  'exampleArrayKey': [[[['s', 'ome']]['simple', 'atomic'], ['values']]]
+  /**
+   * other keys
+   **/
+}
+```
+
+For such cases, the schema structure is simply wrapped in an array as below, including the parameters _optional_ and _outKey_:
+
+```js
+// schemas/UserSchema.js
+export const UserSchema = {
+  /**
+   * definitions for other keys
+   **/
+  'hobbies': [{
+    'validators': ['alphabetical'],
+    'setters': ['toUpper'],
+    'getters': ['asLower'],
+ // 'optional': true,
+ // 'outKey': 'myOutKey' 
+  }],
+  /**
+   * definitions for other keys
+   **/
+}
+```
+
+No matter how deep a value is inside the array, Jsosrm is smart to mine them and convey in-depth path in case validation fails for a value.
+
+A more complex strucutre is when the value of key is a JS object or array of objects.
+
+```js
+let input = {
+  /**
+   * other keys
+   **/
+  'shippingAddress': [
+    {
+      'lineOne': '#41, teSt SiTe',
+      'city': 'Test. 1 ',
+      'state': 'N.A.',
+      'country': 'NA',
+      'zipCode': '000XXX'
+    },
+    /**
+   * other address
+   **/
+  ],
+  /**
+   * other keys
+   **/
+}
+```
+
+In the schema, such a key must point to another child of ParserBaseClass. The child must have a schema representing the structure of values for the key. 
+
+For the above example, we create a _addressSchema.js_ file in 'schemas' folder.
+
+```js
+// schemas/addressSchema.js
+export const AddressSchema = {
+  'lineOne': {
+    'validators': [ 'maxChar_512', 'addressOnly'],
+    'setters': [ 'htmlEncode', 'toUpper']
+  },
+  'city': {
+    'validators': ['maxChar_64', 'addressOnly'],
+    'setters': ['htmlEncode', 'toUpper']
+  },
+  'state': {
+    'validators': ['maxChar_64', 'addressOnly'],
+    'setters': ['htmlEncode', 'toUpper']
+  },
+  'country': {
+    'validators': ['maxChar_2', 'minChar_2', 'alphabetical'],
+    'setters': ['toUpper']
+  },
+  'zipCode': {
+    'validators': ['maxChar_16', 'alphaNumeric'],
+    'setters': ['toUpper']
+  }
+}
+```
+
+Likewise we create a ParserBaseClass child in 'models/addressParserClass.js' file and link the schema for address:
+
+```js
+// models/addressParserClass.js
+import {ParserBaseClass} from 'jsosrm'
+
+import {AddressSchema} from '../schemas/addressSchema'
+
+function AddressModel (params) {
+  ParserBaseClass.apply(this, arguments)
+}
+
+AddressModel.prototype = Object.create(ParserBaseClass.prototype) // extend the class
+AddressModel.prototype.constructor = AddressModel
+AddressModel.prototype.attrDefs = userAddressSchema //link the schema
+
+module.exports = AddressModel
+```
+
+Now back to our 'UserSchema', we link the AddressModel to the schema key 'shippingAddress':
+
+```js
+// schemas/UserSchema.js
+import {AddressModel} from '../models/addressParserClass'
+
+export const UserSchema = {
+  /**
+   * definitions for other keys
+   **/
+  'shippingAddress': {
+    'parser': [AddressModel]
+  },
+  /**
+   * definitions for other keys
+   **/
+}
+```
+
+Like in the case of array with atomic values, Jsosrm is smart to mine JS object at any depth in an array and similarly return the full path of key whose value failed any validation.
+
+If the value was not an array and a single JS object, we would specify it as below:
+
+```js
+'shippingAddress': {
+    'parser': AddressModel
+  },
+```
+
+Note how circular dependency is prevented because of the organization:
+
+<!-- insert the cirxular image here -->
+
+Now that we know how to create child of ParserBaseClass, let's see how to use the model.
+
+### <a name="model>
+**ParserBaseClass child Instances**
+</a>
+
+We can instantiate ParserBaseClass child with the following parameters:
+
+```js
+let instance = new Child(params, update, asyncHandle)
+```
+  - **Required**
+    - params: input object
+  - **Optional**
+    - update : false by default
+    - asyncHandle : false by default
+
+Let's take the example 'input' described [here](#example) and the ParserBaseClass child 'UserModel' we created [here](#parser-child).
+
+#### default mode
+
+```js
+let userModel = new UserModel(input)
+```
+
+In the default mode, 'UserModel' expects all keys defined in its schema to exist in input, unless explicitly stated as optional (see [here](#optional)). None of the validators or getters utility can be async.
+
+#### update mode
+
+```js
+let userModel = new UserModel(input, true)
+```
+
+In the update mode, 'UserModel' doesn't enforce any of the keys defined in its schema to exist in input. It will behave as if all keys are optional. But if a key is present in input, then it must pass all the validations and will be transformed by each of the setters. None of the validators or getters utility can be async.
+
+#### async mode
+
+```js
+let userModel = new UserModel(input, null, true) // update argument can be true or false, won't matter
+```
+
+If we have any validators or setters utilty as an async function for any key, then we must specify the 'asyncHandle' argument as true. See the below section to know how async getters are specified.
+
+### <a name="model-methods">
+ParserBaseClass methods
+</a>
+
+Any instance of ParserBaseClass child has access to the following methods:
+ - getParams
+ - getReverseParams
+
+### <a name="get-params">
+**childInstance.getParams()
+</a>
+
+When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. THe error object contains the following details:
+
+ - errCode: 'INVALID_INPUT' when a validation fails, 'NULL_INPUT' when key is defined in schema, but not present in input, 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom implementation was faulty)
+ - errParam: '.' separated full path of the key for which 'errCode' occured
+ - testKey: validation id that failed for 'errParam'
+
+For the example [here](#example), let's say that we had three 'shippingAddress' and for the 2nd address, the validation identified by 'maxChar_2' failed for the key 'country'.
+
+```js
+let userModel = new UserModel(input)
+let erredUser = userModel.getParams()
+console.log(erredUser) /* prints
+{
+  "errCode": "INVALID_INPUT",
+  "errParam": "shippingAddress.1.country",
+  "testKey": "maxChar_2"
+} 
+*/
+```
+
+### <a name="get-reverse-params">
+**childInstance.getReverseParams(params, asyncHandle)
+</a>
+
+ - **Optional**
+    - params - object to retrieve
+    - asyncHandle - false by default, specify true for async getters
+
+If _getReverseParams_ is called without any arguments on an instance, it executes all the getters specified in its schema on the 'transformed' (_validated and set through setters_) input object provided while constructing the instance and returns the retrieved object. Getters will be executed in async mode if it was set true while constructing the instance.
+
+```js
+let userModel = new UserModel(input)
+let parsedUser = userModel.getParams()
+let retrievedUser = userModel.getReverseParams() // applies getters specified in schema on parsedUser
+```
+
+Additionaly, you can provide external object to retrieve and set _asyncHandle_ arguement to true if getters need to be executed in async mode.
+
+```js
+let retrievedUser = userModel.getReverseParams(anotherObject, true)
+```
+
 
 ### Utilities
 

@@ -260,8 +260,8 @@ async function _asyncParseParams (params) {
         parsedObj[outKey]['testKey'] = e['testKey']
       } else {
         parsedObj[outKey]['errParam'] = key
-        parsedObj[outKey]['errCode'] = e
-        parsedObj[outKey]['testKey'] = 'RUNTIME_ERROR'
+        parsedObj[outKey]['errCode'] = 'RUNTIME_ERROR'
+        parsedObj[outKey]['testKey'] = ''
       }
       this.err = Promise.reject(parsedObj[outKey])
       return this.err

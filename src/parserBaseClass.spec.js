@@ -260,8 +260,8 @@ describe('parse input object as per schema defined =>', () => {
       let attrDef = attrDefgen(null, null, SubClass, outerAttr)
       let parsedObj = new ParserBaseClass(obj, false, true, attrDef)
       return parsedObj.getParams().catch(e => {
-        assert.property(e, 'testKey')
-        assert.strictEqual(e['testKey'], 'RUNTIME_ERROR')
+        assert.property(e, 'errCode')
+        assert.strictEqual(e['errCode'], 'RUNTIME_ERROR')
       })
     })
   })
