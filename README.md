@@ -139,7 +139,7 @@ When your system acts as a medium of data exchange between an insecure source an
 
 ## Where can it be applied?
 
-Jsosrm is modeled to behave like the traditional ORM, except it does not have a concept of queries and is framework agnostic, database agnostic. Hence, it fits as middleware in any system.
+Jsosrm is modeled to behave like the traditional ORM, except it does not have a concept of queries and is framework agnostic, database agnostic. Hence, it fits as middleware in any system from UI library/framework like ReactJs in update mode (see [here](#model)) to modern databases like blockchain.
 
 <!-- list examples here -->
 
@@ -176,7 +176,7 @@ A JS object can be simple key-value pairs or deeply nested with Array and more o
   |  |__ myModel.js // a file per ParserBaseClass child
 ```
 
-Instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass with custom sync/async utility functions can be defined in validators, setters and getters folders respectively. For the example mentioned [here](#example), we need a custom getter that will mask the first 12 of a 16 digit payment card. We do so by creating a file named 'paymentDetailsGetter.js' in 'getters' folder
+Instances of ValidatorBaseClass, SetterBaseClass and GetterBaseClass with custom sync/async utility functions can be defined in validators, setters and getters folders respectively. For the example mentioned [here](#example), we need a custom getter that will mask the first 12 of a 16 digit payment card (besides the built-in ones - see [this](#listAll)). We do so by creating a file named 'paymentDetailsGetter.js' in 'getters' folder
 
 ```js
 // .*/getters/paymentDetailsGetter.js
@@ -201,11 +201,11 @@ Similarly we can define an asynchronous encryption **setter** for password eleme
 Let us say our schema 'UserSchema' is created in 'schemas/userSchema.js' file (we will see how to create schema later [here](#schema)). We now create a model 'UserModel' for our schema 'UserSchema' by extending ParserBaseClass and overriding the following attributes:
 
  - **Required**
-    - attrDefs: to link schema with ParserBaseClass child
+    - attrDefs - to link schema with ParserBaseClass child
  - **Optional** (to provide utilities on top of default ones)
-    - validator: to provide custom validators via instance of ValidatorBaseClass
-    - setter: to provide custom setters via instance of SetterBaseClass
-    - getter: to provide custom getters via instance of GetterBaseClass
+    - validator - to provide custom validators via instance of ValidatorBaseClass
+    - setter - to provide custom setters via instance of SetterBaseClass
+    - getter - to provide custom getters via instance of GetterBaseClass
 
 ```js
 // models/userParserClass.js
@@ -497,10 +497,10 @@ We can instantiate ParserBaseClass child with the following parameters:
 let instance = new Child(params, update, asyncHandle)
 ```
   - **Required**
-    - params: input object
+    - params - input object
   - **Optional**
-    - update : false by default
-    - asyncHandle : false by default
+    - update  - false by default
+    - asyncHandle  - false by default
 
 Let's take the example 'input' described [here](#example) and the ParserBaseClass child 'UserModel' we created [here](#parser-child).
 
@@ -542,12 +542,12 @@ Any instance of ParserBaseClass child has access to the following methods:
 
 When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. The error object contains the following details:
 
- - **errCode**: 
+ - **errCode** - 
     - equals 'INVALID_INPUT' when a validation fails
     - 'NULL_INPUT' when key is defined in schema but is not present in input
     - 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom code was faulty)
- - **errParam**: '.' separated full path of the key for which 'errCode' occured
- - **testKey**: validation id that failed for 'errParam'
+ - **errParam** - '.' separated full path of the key for which 'errCode' occured
+ - **testKey** - validation id that failed for 'errParam'
 
 For the example [here](#example), let's say that we had three 'shippingAddress' and for the 2nd address, the validation identified by 'maxChar_2' failed for the key 'country'. Then 'getParams' would give the following output:
 
@@ -587,7 +587,7 @@ let retrievedUser = userModel.getReverseParams(anotherObject, true)
 
 ### Utilities
 
-Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass provide in-built utilities. Also, custom utilities for each instance can be defined. The constructor does not take any arguments.
+Instances of ValidatorBaseClass, SetterBaseClass, and GetterBaseClass come with built-in utilities. Also, custom utilities for each instance can be defined. The constructor does not take any arguments.
 
 ```js
 let validator = new ValidatorBaseClass()
@@ -614,8 +614,8 @@ chain multiple instance utility methods on an input value
 - *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
 
 In case of ValidatorBaseClass instances, returns an object with the following keys:
- -  isValid: equals _true_ if all validations succeed, else is _false_
- -  testKey: equals key of the validation that failed
+ -  isValid - equals _true_ if all validations succeed, else is _false_
+ -  testKey - equals key of the validation that failed
 
 ```js
 let test = validator.exec('t3432df', [
@@ -657,8 +657,8 @@ chain multiple instance utility methods like [exec](#exec), including any asynch
 - *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
 
 In case of ValidatorBaseClass instances, returns promise resolving to an object with following keys:
- -  isValid: equals _true_ if all validations succeed, else is _false_
- -  testKey: equals key of the validation that failed
+ -  isValid - equals _true_ if all validations succeed, else is _false_
+ -  testKey - equals key of the validation that failed
 
 ```js
 let test = validator.exec('testValue', [
