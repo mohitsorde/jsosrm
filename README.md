@@ -363,15 +363,22 @@ export const UserSchema = {
  // 'optional': true,
  // 'outKey': 'myOutKey' 
   }],
+  'exampleArrayKey': [{
+    'validators': ['alphabetical'],
+    'setters': ['toUpper'],
+    'getters': ['asLower'],
+ // 'optional': true,
+ // 'outKey': 'myOutKey' 
+  }],
   /**
    * definitions for other keys
    **/
 }
 ```
 
-No matter how deep a value is inside the array, Jsosrm is smart to mine them and convey in-depth path in case validation fails for a value.
+No matter how deep a value is inside the array, Jsosrm is smart to mine them and convey in-depth path in case validation fails for one.
 
-A more complex strucutre is when the value of key is a JS object or array of objects.
+A more complex strucutre is when the value of key is a JS object or an array of objects.
 
 ```js
 let input = {
@@ -445,7 +452,7 @@ AddressModel.prototype.attrDefs = userAddressSchema //link the schema
 module.exports = AddressModel
 ```
 
-Now back to our 'UserSchema', we link the AddressModel to the schema key 'shippingAddress':
+We don't require any custom utility and hence we did not override the default validator, setter or getter instance from ParserBaseClass. Now back to our 'UserSchema', we link the AddressModel to the schema key 'shippingAddress':
 
 ```js
 // schemas/UserSchema.js
@@ -478,9 +485,9 @@ Note how circular dependency is prevented because of the organization:
 
 <!-- insert the cirxular image here -->
 
-Now that we know how to create child of ParserBaseClass, let's see how to use the model.
+Now that we know how to create children of ParserBaseClass, let's see how to use the model.
 
-### <a name="model>
+### <a name="model">
 **ParserBaseClass child Instances**
 </a>
 
@@ -519,7 +526,7 @@ In the update mode, 'UserModel' doesn't enforce any of the keys defined in its s
 let userModel = new UserModel(input, null, true) // update argument can be true or false, won't matter
 ```
 
-If we have any validators or setters utilty as an async function for any key, then we must specify the 'asyncHandle' argument as true. See the below section to know how async getters are specified.
+If we have any validators or setters utilty as an async function for any key, then we must specify the 'asyncHandle' argument as true. See the [below section](#push) to know how async getters are specified.
 
 ### <a name="model-methods">
 ParserBaseClass methods
