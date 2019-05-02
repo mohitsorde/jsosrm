@@ -529,7 +529,7 @@ let userModel = new UserModel(input, null, true) // update argument can be true 
 If we have any validators or setters utilty as an async function for any key, then we must specify the 'asyncHandle' argument as true. See the [below section](#push) to know how async getters are specified.
 
 ### <a name="model-methods">
-ParserBaseClass methods
+**ParserBaseClass methods**
 </a>
 
 Any instance of ParserBaseClass child has access to the following methods:
@@ -537,16 +537,16 @@ Any instance of ParserBaseClass child has access to the following methods:
  - getReverseParams
 
 ### <a name="get-params">
-**childInstance.getParams()
+**childInstance.getParams()**
 </a>
 
-When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. THe error object contains the following details:
+When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. The error object contains the following details:
 
- - errCode: 'INVALID_INPUT' when a validation fails, 'NULL_INPUT' when key is defined in schema, but not present in input, 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom implementation was faulty)
- - errParam: '.' separated full path of the key for which 'errCode' occured
- - testKey: validation id that failed for 'errParam'
+ - **errCode**: equals 'INVALID_INPUT' when a validation fails; 'NULL_INPUT' when key is defined in schema but is not present in input; 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom code was faulty)
+ - **errParam**: '.' separated full path of the key for which 'errCode' occured
+ - **testKey**: validation id that failed for 'errParam'
 
-For the example [here](#example), let's say that we had three 'shippingAddress' and for the 2nd address, the validation identified by 'maxChar_2' failed for the key 'country'.
+For the example [here](#example), let's say that we had three 'shippingAddress' and for the 2nd address, the validation identified by 'maxChar_2' failed for the key 'country'. Then 'getParams' would give the following output:
 
 ```js
 let userModel = new UserModel(input)
@@ -561,14 +561,14 @@ console.log(erredUser) /* prints
 ```
 
 ### <a name="get-reverse-params">
-**childInstance.getReverseParams(params, asyncHandle)
+**childInstance.getReverseParams(params, asyncHandle)**
 </a>
 
  - **Optional**
     - params - object to retrieve
     - asyncHandle - false by default, specify true for async getters
 
-If _getReverseParams_ is called without any arguments on an instance, it executes all the getters specified in its schema on the 'transformed' (_validated and set through setters_) input object provided while constructing the instance and returns the retrieved object. Getters will be executed in async mode if it was set true while constructing the instance.
+If _getReverseParams_ is called without any arguments on an instance, it executes all the getters specified in its schema on the 'transformed' (_validated and set through setters_) input object provided while constructing the instance and returns the retrieved object. _Getters will be executed in async mode if it was set true while constructing the instance._ _getReverseParams_ reverses the effect of _outKey_ - it would preserve the original key in the retrieved object.
 
 ```js
 let userModel = new UserModel(input)
@@ -576,12 +576,11 @@ let parsedUser = userModel.getParams()
 let retrievedUser = userModel.getReverseParams() // applies getters specified in schema on parsedUser
 ```
 
-Additionaly, you can provide external object to retrieve and set _asyncHandle_ arguement to true if getters need to be executed in async mode.
+Additionaly, you can provide external object to retrieve and set _asyncHandle_ argument to true if getters need to be executed in async mode.
 
 ```js
 let retrievedUser = userModel.getReverseParams(anotherObject, true)
 ```
-
 
 ### Utilities
 
@@ -611,17 +610,25 @@ chain multiple instance utility methods on an input value
 - *_value_* - input to be processed
 - *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
 
-In case of ValidatorBaseClass instances, returns false at the first validation that fails or true if all pass
+In case of ValidatorBaseClass instances, returns an object with the following keys:
+ -  isValid: equals _true_ if all validations succeed, else is _false_
+ -  testKey: equals key of the validation that failed
 
 ```js
-let isValid = validator.exec('t3432df', [
+let test = validator.exec('t3432df', [
     'isString',
     'alphabetical',
     // ... use listAll to know in-built methods
     'myCustomValidator',
     // ... any in-built or custom validator methods defined for the instance using push or pushAll
-]) 
-// returns false in this case as test for `alhpabetical` fails
+])
+console.log(test)
+/*
+{
+  isValid: false,
+  testKey: 'alphabetical'
+}
+*/
 ```
 
 In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method. Output of first utility is input to second utility and so on the chain continues till final value is returned
@@ -646,17 +653,22 @@ chain multiple instance utility methods like [exec](#exec), including any asynch
 - *_value_* - input to be processed
 - *_arrayOfUtilKeys_* - array of keys of instance utility methods to be executed in order on input value
 
-In case of ValidatorBaseClass instances, returns promise resolving to false at the first validation that fails or to true if all pass
+In case of ValidatorBaseClass instances, returns promise resolving to an object with following keys:
+ -  isValid: equals _true_ if all validations succeed, else is _false_
+ -  testKey: equals key of the validation that failed
 
 ```js
-let isValid = validator.exec('testValue', [
+let test = validator.exec('testValue', [
     'isString',
     'alphabetical',
     // ... use listAll to know in-built methods
     'myAsyncCustomValidator',
     // ... any custom or async validator methods defined for the instance using push or pushAll
 ]) 
-// returns true or false
+console.log(test)
+/*
+{isValid: true}
+*/
 ```
 
 In case of SetterBaseClass and GetterBaseClass, the value is transformed as per each utility method and promise that resolves to final value is returned
