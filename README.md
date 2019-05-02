@@ -542,7 +542,10 @@ Any instance of ParserBaseClass child has access to the following methods:
 
 When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. The error object contains the following details:
 
- - **errCode**: equals 'INVALID_INPUT' when a validation fails; 'NULL_INPUT' when key is defined in schema but is not present in input; 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom code was faulty)
+ - **errCode**: 
+    - equals 'INVALID_INPUT' when a validation fails
+    - 'NULL_INPUT' when key is defined in schema but is not present in input
+    - 'RUNTIME_ERROR' when there is an uncaught exception in async validators or setters (indicating the custom code was faulty)
  - **errParam**: '.' separated full path of the key for which 'errCode' occured
  - **testKey**: validation id that failed for 'errParam'
 
