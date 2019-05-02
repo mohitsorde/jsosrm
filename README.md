@@ -69,12 +69,56 @@ and use it as:
 
 ```js
 let parsedUser = (new UserModel(input)).getParams()
+console.log(parsedUser)
+/*
+{
+  "emailId":"example1@domain.com",
+  "firstName":"Example. One",
+  "lastName":"&lt;script Src=&quot;https://malicious.Worm...&quot;&gt;&lt;/script&gt;",
+  "hobbies":["TENNIS","CRICKET"],
+  "shippingAddress":[
+    {
+      "lineOne":"#41, TEST SITE",
+      "city":"TEST. 1 ",
+      "state":"N.A.",
+      "country":"NA",
+      "zipCode":"000XXX"
+      }
+  ],
+  "paymentDetails":[
+    {
+      "cardNumber":"2222222222222222"
+    }
+  ]
+}
+*/
 ```
 
 and vice-versa retrieve like:
 
 ```js
 let reverseParsedUser = (new UserModel()).getReverseParams(parsedUser)
+console.log(reverseParsedUser)
+/*
+{
+  "emailId":"example1@domain.com",
+  "firstName":"Example. One",
+  "lastName":"&lt;script Src=&quot;https://malicious.Worm...&quot;&gt;&lt;/script&gt;",
+  "hobbies":["tennis","cricket"],
+  "shippingAddress":[
+    {
+      "lineOne":"#41, TEST SITE","
+      city":"TEST. 1 ",
+      "state":"N.A.",
+      "country":"NA",
+      "zipCode":"000XXX"
+    }
+  ],
+  "paymentDetails":[
+    {"cardNumber":"************2222"}
+  ]
+}
+*/
 ```
 
 Now _parsedUser_ would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
