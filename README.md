@@ -533,8 +533,8 @@ If we have any validators or setters utilty as an async function for any key, th
 </a>
 
 Any instance of ParserBaseClass child has access to the following methods:
- - getParams
- - getReverseParams
+ - [getParams](#get-params)
+ - [getReverseParams](#get-reverse-params)
 
 ### <a name="get-params">
 **childInstance.getParams()**
