@@ -1,7 +1,7 @@
 {
-  "name": "transformer-sandbox",
+  "name": "jsosrm",
   "version": "1.0.0",
-  "description": "validator modifier",
+  "description": "a simple JavaScript Object Structurer Retriever and Mapper",
   "main": "index.js",
   "scripts": {
     "test": "npm run test-code-standard && npm run test-unit",
@@ -10,14 +10,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://mohitsorde:dc6c15157f0a47b2bafa9cd30f39a78c70ec3f49@github.com/mohitsorde/transformer-sandbox.git"
+    "url": "git+https://github.com/mohitsorde/jsosrm.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Mohit Sorde",
+  "keywords": [
+    "orm",
+    "database orm",
+    "blockchain orm",
+    "react orm",
+    "validator",
+    "setter",
+    "getter",
+    "orm middleware"
+  ],
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mohitsorde/transformer-sandbox/issues"
+    "url": "https://github.com/mohitsorde/jsosrm/issues"
   },
-  "homepage": "https://github.com/mohitsorde/transformer-sandbox#readme",
+  "homepage": "https://github.com/mohitsorde/jsosrm#readme",
   "devDependencies": {
     "chai": "^4.2.0",
     "co-mocha": "^1.2.2",
