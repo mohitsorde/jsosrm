@@ -1,4 +1,4 @@
-# Jsosrm
+# jsosrm
 > A simple JavaScript Object Structurer Retriever and Mapper
 
 ## What it does?
@@ -119,7 +119,7 @@ console.log(reverseParsedUser)
 */
 ```
 
-Now 'parsedUser' would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what Jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
+Now 'parsedUser' would contain error if any validations failed or be new transformed object when all our simplistic verbal requirements are met. This is what jsosrm is built for. (_how **UserParser** is linked to **UserSchema** is documented [here](#structurer-retriever-and-mapper)_)
 
 Features:
  - support for deep nesting of objects and arrays
@@ -131,13 +131,13 @@ Features:
  - retrieves the original key during get operation
  - update mode 
 
-When your system acts as a medium of data exchange between an insecure source and a protected target, Jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when Jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
+When your system acts as a medium of data exchange between an insecure source and a protected target, jsosrm helps to define schematic structure for the incoming object from the source, ensures the structure passes through a layer of validations and forwards a transformed structured output to the target. Vice-versa, when jsosrm is provided with the secured data from target, it retrieves the original source structure. That way the source and the target need not be aware of each other.
 
 <!-- image -->
 
 ## Where can it be applied?
 
-Jsosrm is modeled to behave like the traditional ORM, except it does not have a concept of queries and is framework agnostic, database agnostic. Hence, it fits as middleware in any system from UI library/framework like ReactJs in update mode (see [here](#model)) to modern databases like blockchain.
+jsosrm is modeled to behave like the traditional ORM, except it does not have a concept of queries and is framework agnostic, database agnostic. Hence, it fits as middleware in any system from UI library/framework like ReactJs in update mode (see [here](#model)) to modern databases like blockchain.
 
 <!-- list examples here -->
 
@@ -149,7 +149,7 @@ npm install jsosrm --save
 
 ## Usage and examples
 
-Jsosrm provides four classes that can be imported:
+jsosrm provides four classes that can be imported:
 
 ```js
 import {ValidatorBaseClass, SetterBaseClass, GetterBaseClass, ParserBaseClass} from 'jsosrm'
@@ -159,7 +159,7 @@ Now the usage can be classified into two broad sections - one when we are dealin
 
 ### Structurer Retriever and Mapper
 
-A JS object can be simple key-value pairs or deeply nested with Array and more objects. Jsosrm provides **ParserBaseClass** with methods that follow depth-first approach to enforce structure and validations defined by schema. ParserBaseClass by default is not associated with any schema. The class is provided with default ValidatorBaseClass, SetterBaseClass and GetterBaseClass instances (see [this](#utilities) for details). To link ParserBaseClass with a schema and custom validators, getters, setters if needed, we first define the following folder structure:
+A JS object can be simple key-value pairs or deeply nested with Array and more objects. jsosrm provides **ParserBaseClass** with methods that follow depth-first approach to enforce structure and validations defined by schema. ParserBaseClass by default is not associated with any schema. The class is provided with default ValidatorBaseClass, SetterBaseClass and GetterBaseClass instances (see [this](#utilities) for details). To link ParserBaseClass with a schema and custom validators, getters, setters if needed, we first define the following folder structure:
 
 ```.
   |__ validators
@@ -235,7 +235,7 @@ Now lets have a look at how to define schema.
 **Schema**
 </a>
 
-Schema is a simple JS object with the same keys as input object. In the schema, value of a key is an object with parameters that conforms to a Jsosrm specification. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
+Schema is a simple JS object with the same keys as input object. In the schema, value of a key is an object with parameters that conforms to a jsosrm specification. We already caught a glimpse [here](#example-schema) for [this](#example) example. For each key, we can define the following parameters:
  - for any key
     - optional
     - outKey
@@ -250,7 +250,7 @@ Schema is a simple JS object with the same keys as input object. In the schema, 
 **optional**
 </a>
 
-An input object may contain keys other than the ones defined in the schema. Jsosrm does not validate or set these other keys. But for the defined ones, Jsosrm needs these keys to be strictly present in input. Else it throws the error: 
+An input object may contain keys other than the ones defined in the schema. jsosrm does not validate or set these other keys. But for the defined ones, jsosrm needs these keys to be strictly present in input. Else it throws the error: 
 
 ```js
 {
@@ -301,7 +301,7 @@ export const UserSchema = {
 }
 ```
 
-Note that when we retrieve the parsed object which now has the outKey specified via _getReverseParams_, we get the original input key. This is automatically handled by Jsosrm.
+Note that when we retrieve the parsed object which now has the outKey specified via _getReverseParams_, we get the original input key. This is automatically handled by jsosrm.
 
 ### <a name="val-set-get">
 **validators, setters, getters**
@@ -374,7 +374,7 @@ export const UserSchema = {
 }
 ```
 
-No matter how deep a value is inside the array, Jsosrm is smart to mine them and convey in-depth path in case validation fails for one.
+No matter how deep a value is inside the array, jsosrm is smart to mine them and convey in-depth path in case validation fails for one.
 
 A more complex strucutre is when the value of key is a JS object or an array of objects.
 
@@ -469,7 +469,7 @@ export const UserSchema = {
 }
 ```
 
-Like in the case of array with atomic values, Jsosrm is smart to mine JS object at any depth in an array and similarly return the full path of key whose value failed any validation.
+Like in the case of array with atomic values, jsosrm is smart to mine JS object at any depth in an array and similarly return the full path of key whose value failed any validation.
 
 If the value was not an array and a single JS object, we would specify it as below:
 
