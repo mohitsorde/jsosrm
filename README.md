@@ -3,9 +3,8 @@
 
 ## What it does?
 
-<a name="example">
-Without loss of generality, let us consider a common web service scenario where form data entered by a user needs validation and transformation as it goes from View to Model via Controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
-</a>
+Without loss of generality, let us consider a <a name="example">common web service scenario</a> where form data entered by a user needs validation and transformation as it goes from View to Model via Controller (potentially on client app and most certainly again on web server before being passed to database) and vice-versa.
+
 
 ```js
 let input = {
@@ -30,9 +29,8 @@ let input = {
 ```
 
 We definitely require validations for each element like email format or prevention of potential Cross Site Scripting values or so on. We may also require transformations like encrypting the password element or making names as upper case or using different key and so on. Similarly when we retrieve data from database, we may require to perform certain transformations like masking certain digits of card or so on. 
-<a name="example-schema">
-How about if we could define all these requirements verbally like below:
-</a>
+
+How about if we could define all these requirements verbally like <a name="example-schema">below</a>:
 
 ```js
 const UserSchema = {
