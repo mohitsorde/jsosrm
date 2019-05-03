@@ -479,7 +479,7 @@ If the value was not an array and a single JS object, we would specify it as bel
 
 Note how circular dependency is prevented because of the organization:
 
-<!-- insert the cirxular image here -->
+<img src="./assets/circular.png">
 
 Now that we know how to create children of ParserBaseClass, let's see how to use the model.
 
