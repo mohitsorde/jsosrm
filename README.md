@@ -1,8 +1,6 @@
 # Jsosrm
 > A simple JavaScript Object Structurer Retriever and Mapper
 
-[![NPM Version][npm-image]][npm-url]
-
 ## What it does?
 
 <a name="example">
@@ -788,10 +786,6 @@ console.log(getter.isValidUtilKey('anyRandomKey'))
 ```
 
 
-## Meta
+## LICENSE
 
-Distributed under the XYZ license. See ``LICENSE`` for more information.
-
-[https://github.com/mohitsorde/Jsosrm](https://github.com/mohitsorde/Jsosrm)
-
-## Contributing
+MIT © [Mohit Sorde](https://www.linkedin.com/in/mohitsorde)
