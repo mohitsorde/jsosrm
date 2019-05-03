@@ -537,7 +537,7 @@ Any instance of ParserBaseClass child has access to the following methods:
  - [getReverseParams](#get-reverse-params)
 
 ### <a name="get-params">
-**childInstance.getParams()**
+**childInstance._getParams()_**
 </a>
 
 When all of the validations in schema pass and each setters utility has been executed, _getParams_ returns the transformed input. If any validation fails, _getParams_ returns an error object. In async mode, a rejected Promise constaining error object is returned. The error object contains the following details:
@@ -564,7 +564,7 @@ console.log(erredUser) /* prints
 ```
 
 ### <a name="get-reverse-params">
-**childInstance.getReverseParams(params, asyncHandle)**
+**childInstance._getReverseParams(params, asyncHandle)_**
 </a>
 
  - **Optional**
@@ -605,7 +605,7 @@ To consume or manipulate the utilities, the instances are provided with the foll
  - [isValidUtilKey](#isValidUtilKey)
 
 ### <a name="exec">
-**_instance_.exec(value, arrayOfUtilKeys)**
+**instance._exec(value, arrayOfUtilKeys)_**
 </a>
 
 chain multiple instance utility methods on an input value
@@ -648,7 +648,7 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ```
 
 ### <a name="asyncExec">
-**_instance_.asyncExec(value, arrayOfUtilKeys)**
+**instance._asyncExec(value, arrayOfUtilKeys)_**
 </a>
 
 chain multiple instance utility methods like [exec](#exec), including any asynchronous methods on an input value and return a promise
@@ -687,7 +687,7 @@ let outputValue = setter.exec('<script src="http://malware-..." />', [
 ```
 
 ### <a name="push">
-**_instance_.push(key, impl, desc)**
+**instance._push(key, impl, desc)_**
 </a>
 
 Add a custom utility function to the instance
@@ -726,7 +726,7 @@ setter.push('myAsyncCustomSetter', function (val) {
 *Note*: _the new method will replace an existing utility method with the same key in the instance_ 
 
 ### <a name="pushAll">
-**_instance_.pushAll(arr)**
+**instance._pushAll(arr)_**
 </a>
 
 Multiple utility methods can be pushed into instance simultaneously
@@ -756,10 +756,10 @@ validator.pushAll([
 *Note*: _the new method will replace an existing utility method with the same key in the instance_
 
 ### <a name="listAll">
-**_instance_.listAll()**
+**instance._listAll()_**
 </a>
 
-Lists key and description of all in-built and custom _instance_ utility methods
+Lists key and description of all in-built and custom _instance_ utility methods that were pushed
 
 ```js
 console.log(getter.listAll())
@@ -774,7 +774,7 @@ maskCardNumbers => masks all digits except the last 4*/
 <!-- state likewise can be used for validator and setter -->
 
 ### <a name="isValidUtilKey">
-**_instance_.isValidUtilKey(utilKey)**
+**instance._isValidUtilKey(utilKey)_**
 </a>
 
 returns true if _instance_ has the _utilKey_, else throws an error
