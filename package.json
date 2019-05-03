@@ -1,6 +1,6 @@
 {
   "name": "jsosrm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a simple JavaScript Object Structurer Retriever and Mapper",
   "main": "index.js",
   "scripts": {
